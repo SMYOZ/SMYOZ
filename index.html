@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+
+<html lang="hu">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>SMYOZ – Honlap (offline csomag)</title>
+<style>
+    :root {
+    --smy-brown: #5a3c32;
+      --bg: #0b1220;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.10);
+      --txt: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --line: rgba(255,255,255,0.12);
+      --accent: #8dd6ff;
+      --accent2: #b7ffb2;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    body {
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(141,214,255,0.12), transparent 60%),
+                  radial-gradient(1000px 600px at 80% 20%, rgba(183,255,178,0.10), transparent 60%),
+                  var(--bg);
+      color: var(--txt);
+    }
+    .wrap { max-width: 1250px; margin: 0 auto; padding: 24px 14px 56px; }
+    .top-controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--txt);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .chip:focus { outline: 2px solid rgba(183,255,178,0.35); outline-offset: 2px; }
+
+    body.hide-tech .ext { display:none; }
+    body.hide-tech .tech { display:none; }
+
+    /* SMYOZ: Vidámabb "környezetek" (téma-váltás). */
+    body.theme-alap{ }
+    body.theme-sunny{
+  /* SMYOZ: „ACÉL” – sötétebb, kontrasztosabb (offline-barát) */
+  --bg:#2f3b48;
+  --card: rgba(255,255,255,0.08);
+  --card2: rgba(255,255,255,0.14);
+  --txt: rgba(245,248,252,0.94);
+  --muted: rgba(245,248,252,0.72);
+  --line: rgba(245,248,252,0.16);
+  --accent:#ffd36b;
+  --accent2:#34d399;
+  --shadow: 0 12px 34px rgba(0,0,0,.45);
+}
+body.theme-mint{
+      --bg:#0b1f1a;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.10);
+      --txt: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --line: rgba(255,255,255,0.12);
+      --accent:#39d2c0;
+      --accent2:#b7ffb2;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    body.theme-candy{
+      --bg:#120a1e;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.10);
+      --txt: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --line: rgba(255,255,255,0.12);
+      --accent:#ff7ad9;
+      --accent2:#8dd6ff;
+      --shadow: 0 10px 30px rgba(0,0,0,.38);
+    }
+
+    /* SMYOZ: a háttér "hangulatfényét" a témához igazítjuk */
+    body.theme-sunny{
+      background:
+        radial-gradient(1200px 650px at 15% 12%, rgba(125,160,210,0.22), transparent 62%),
+        radial-gradient(1000px 700px at 85% 18%, rgba(60,90,140,0.28), transparent 65%),
+        linear-gradient(180deg, #5d6d82 0%, #3b4a5c 55%, #26313e 100%);
+    }
+body.theme-mint{
+      background: radial-gradient(1200px 650px at 20% 10%, rgba(57,210,192,0.14), transparent 60%),
+                  radial-gradient(1000px 650px at 80% 20%, rgba(183,255,178,0.10), transparent 60%),
+                  var(--bg);
+    }
+    body.theme-candy{
+      background: radial-gradient(1200px 650px at 20% 10%, rgba(255,122,217,0.14), transparent 60%),
+                  radial-gradient(1000px 650px at 80% 20%, rgba(141,214,255,0.12), transparent 60%),
+                  var(--bg);
+    }
+
+    header {
+      padding: 18px 18px 22px; border: 1px solid var(--line); background: rgba(255,255,255,0.04);
+      border-radius: 18px; box-shadow: var(--shadow);
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: 0.3px; }
+    .sub { margin:0; color: var(--muted); line-height: 1.4; }
+    .grid { display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+    @media (min-width: 880px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1240px) {
+      .grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .card {
+      border: 1px solid var(--line); border-radius: 18px; background: var(--card);
+      padding: 16px 16px 14px; box-shadow: var(--shadow);
+    }
+    .card h2 { margin: 0 0 10px; font-size: 18px; }
+    .card h3 { margin: 0 0 10px; font-size: 16px; }
+    ul { margin: 8px 0 0 18px; padding: 0; }
+    li { margin: 6px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .ext { color: var(--muted); font-size: 12px; margin-left: 6px; }
+    .muted { color: var(--muted); }
+    .btn {
+      display:inline-block; margin-top: 8px; padding: 10px 12px; border-radius: 12px;
+      border:1px solid var(--line); background: var(--card2); color: var(--txt); text-decoration:none;
+          white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn:hover { filter: brightness(1.05); text-decoration:none; }
+    .section-title { margin: 18px 0 10px; font-size: 18px; }
+    .acc {
+      border:1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,0.04);
+      padding: 10px 12px; margin-top: 10px;
+    }
+    .acc summary {
+      cursor: pointer; font-weight: 700; list-style: none;
+    }
+    .acc summary::-webkit-details-marker { display:none; }
+    .acc-body { padding: 10px 0 4px; }
+    .filelist { margin-left: 18px; }
+    .thumbgrid {
+      margin-top: 10px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+    }
+    .thumb {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.20);
+      padding: 0;
+      cursor: pointer;
+      aspect-ratio: 1 / 1;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .hint { margin-top: 8px; color: var(--muted); font-size: 12px; }
+    /* Lightbox */
+    .lb {
+      position: fixed; inset: 0; display:none;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      z-index: 9999;
+      padding: 18px;
+    }
+    .lb.on { display:flex; }
+    .lb-box {
+      width: min(980px, 96vw);
+      max-height: 92vh;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--smy-brown);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display:flex;
+      flex-direction: column;
+    }
+    .lb-top {
+      display:flex; align-items:center; justify-content: space-between;
+      padding: 10px 12px; border-bottom: 1px solid var(--line);
+      gap: 10px;
+    }
+    .lb-cap { color: var(--muted); font-size: 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .lb-actions { display:flex; gap: 8px; flex:0 0 auto; }
+    .lb-btn {
+      border:1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--txt);
+      padding: 8px 10px; border-radius: 12px; cursor:pointer;
+    }
+    .lb-btn:hover { filter: brightness(1.05); }
+    .lb-body {
+      padding: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:auto;
+    }
+    .lb-body img {
+      max-width: 100%;
+      max-height: 78vh;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
+    }
+    .footer {
+      margin-top: 16px; color: var(--muted); font-size: 12px; line-height: 1.4;
+      border-top: 1px solid var(--line); padding-top: 10px;
+    }
+    code {
+      background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 8px;
+      border:1px solid rgba(255,255,255,0.10);
+    }
+  
+    .hero { margin-top: 12px; text-align: center; }
+    .hero-btn { font-weight: 900; font-size: 18px; padding: 12px 16px; border-radius: 16px; }
+    .btnrow { display:flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+    .center-card { margin-top: 14px; }
+    .narrow { max-width: 560px; margin: 14px auto 0; }
+    .folders-grid { display:grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+    @media (min-width: 880px) { .folders-grid { grid-template-columns: 1fr 1fr; } .folders-grid .acc { margin-top: 0; } }
+
+    /* Document viewer */
+    .vw {
+      position: fixed; inset: 0; display:none;
+      align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      z-index: 9998;
+      padding: 18px;
+    }
+    .vw.on { display:flex; }
+    .vw-box {
+      width: min(1120px, 94vw);
+      height: min(95vh, 1080px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--smy-brown);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display:flex;
+      flex-direction: column;
+    }
+    .vw-box.wide { width: min(1700px, 98vw); height: min(900px, 92vh); }
+    
+    /* VW TXT mód: nagyítás iframe-en (file:// alatt nincs fetch) */
+    .vw-box.txtmode { width: min(1400px, 98vw); height: min(900px, 92vh); }
+    .vw-box.txtmode .vw-body{ background: var(--smy-brown); }
+    .vw-box.txtmode iframe{
+      background: var(--smy-brown);
+      transform-origin: 0 0;
+      transform: scale(1.5);
+      width: calc(100% / 1.5);
+      height: calc(100% / 1.5);
+    }
+.vw-top {
+      display:flex; align-items:center; justify-content: space-between;
+      padding: 10px 12px; border-bottom: 1px solid var(--line);
+      gap: 10px;
+    }
+    .vw-cap { color: var(--muted); font-size: 13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .vw-actions { display:flex; gap: 8px; flex:0 0 auto; }
+    .vw-btn {
+      border:1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--txt);
+      padding: 8px 10px; border-radius: 12px; cursor:pointer; text-decoration:none;
+      display:inline-flex; align-items:center;
+    }
+    .vw-btn:hover { filter: brightness(1.05); text-decoration:none; }
+    .vw-body { flex: 1 1 auto; background: rgba(0,0,0,0.18); }
+    .vw-body iframe { width: 100%; height: 100%; border: 0; }
+
+
+    /* --- finomhangolás (2025-12-31) --- */
+    .half-card { max-width: 520px; margin: 14px auto 0; }
+    .excel-card { max-width: 420px; margin: 14px auto 0; }
+    .btncol { flex-direction: column; align-items: center; }
+    .btncol .btn { width: 100%; max-width: 360px; text-align: center; }
+    /* Dokumentum-néző világosabb, kevésbé „fekete” */
+    .vw { background: rgba(0,0,0,0.65); }
+    .vw-box { background: #f7f7f7; color: #111; }
+    .vw-top { background: #ffffff; }
+    .vw-cap { color: #444; }
+    .vw-btn { background: #ffffff; color:#111; border:1px solid rgba(0,0,0,0.25); }
+    .vw-btn:hover { border-color: rgba(0,0,0,0.45); }
+    .vw-body { background: #f7f7f7; }
+
+
+    /* --- SMYOZ: dokumentum-néző (vw) "vissza" sáv: lebegő sarokpanel (nem vesz el magasságot) --- */
+    .vw-box{ position: relative; }
+    .vw-top{
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 5;
+      border-bottom: 0 !important;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      padding: 8px 10px;
+      gap: 8px;
+    }
+    /* A címsor csak helyet foglalna; marad tooltip-ben / title attribútumban. */
+    .vw-cap{ display:none; }
+    .vw-actions{ margin-left: auto; }
+    .vw-body{ height: 100%; }
+    .vw-body iframe{ width:100%; height:100%; border:0; }
+
+
+    /* --- SMYOZ: VW sáv – sarokpanel (ne takarja ki a programok felső címét) --- */
+    .vw-top{
+      display: inline-flex;
+      width: auto;
+      max-width: 360px;
+      right: auto;
+      gap: 8px;
+    }
+
+
+/* SMYOZ: technikai (apróbetűs) blokkok végleges elrejtése */
+.tech, .technical, .debug, .fineprint, #tech, #technical, #debug { display:none !important; }
+
+/* SMYOZ: olvasó – programoknál a felső sáv ne foglaljon magasságot */
+.vw.program .vw-top{ display:flex; }
+.vw.program .vw-body{ height: calc(100vh - 0px) !important; }
+.vw.program iframe{ height: 100% !important; }
+
+/* SMYOZ: olvasó – gombok ne legyenek túl magasak */
+.vw-top{ padding: 8px 10px !important; }
+.vw-actions .vw-btn{ padding: 6px 10px !important; font-size: 14px !important; }
+
+
+/* SMYOZ: szöveg (TXT/MD) megjelenítés iframe helyett */
+.vw-text{
+  margin: 0;
+  padding: 14px 16px;
+  height: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.35;
+  background: rgba(0,0,0,0.78);
+  color: rgba(255,255,255,0.92);
+  border-radius: 14px;
+}
+
+
+    /* SMYOZ: Új fül gomb végleg elrejtve */
+    #vwOpenNew{display:none !important;}
+
+
+    /* SMYOZ: Bezár gomb elrejtve (Vissza elég) */
+    #vwClose{display:none !important;}
+
+    /* SMYOZ: főoldali sorminta kép – alsó, világosabb területre középre */
+    .sorminta-panel{
+      margin: 18px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      box-shadow: var(--shadow);
+      min-height: 44vh;            /* az üres alsó fél „kitöltése” */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 16px 12px;
+    }
+    .sorminta-wrap{
+      width: 80%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .sorminta-wrap img{
+      width: min(1200px, 99vw); /* cél: láthatóan nagyobb */
+      max-width: none;
+      height: auto;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.75); 
+      filter: brightness(0.85) contrast(0.85) saturate(0.95);
+      opacity: 0.85;
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>SMYOZ</h1>
+<div class="top-controls">
+   <button class="chip" id="btnTheme" type="button" aria-pressed="false">Környezet: Alap</button>
+  <!-- SMYOZ: A "Környezet" gomb a honlap kinézetét váltja. -->
+</div>
+
+<div class="hero">
+<a class="btn hero-btn" data-title="Toborzó" href="docs/SMYOZ_TOBORZ.pdf">TOBORZÓ</a>
+
+</header>
+<div class="grid">
+<section class="card">
+<h2>Programok</h2>
+<ul>
+<li><a class="open-vw" data-title="SMYOZ GENERÁTOR – STAT" href="programok/SMYOZ_GENERATOR_STAT.html">SMYOZ GENERÁTOR – STAT</a></li>
+<li><a class="open-vw" data-title="SMYOZ GENERÁTOR – MANUAL" href="programok/SMYOZ_GENERATOR_MANUAL.html">SMYOZ GENERÁTOR – MANUAL</a></li>
+<li><a class="open-vw" data-title="SMYOZ EXPLORER" href="programok/SMYOZ_EXPLORER.html">SMYOZ EXPLORER</a></li>
+</ul>
+
+</section>
+<section class="card">
+<h2>Ismertetők</h2>
+<ul>
+<li><a class="" data-title="SMYOZ leírás (GPT – GEN/EXPL)" href="docs/SMYOZ_GPT_leiras_GEN_EXPL.pdf">SMYOZ leírás (GPT – GEN/EXPL)</a></li>
+<li><a class="" data-title="EXPLORER – Automatizmusok (szűkszavú)" href="docs/EXPLORER_AUTOMATIZMUSOK_sz_kszavu.pdf">EXPLORER – Automatizmusok</a></li>
+<li><a class="" data-title="SMYOZ leírás (papíralap)" href="docs/SMYOZ_leiras_papiralap.pdf">SMYOZ leírás (papíralap)</a></li>
+</ul>
+</section>
+<section class="card">
+<h2>Cikkek</h2>
+<div class="btncol btnrow">
+<a class="btn" data-title="Hennyey Judit: SMYOZ – A matematika tanítása (1983)" href="docs/HennyeyJuditSmyoz_A_matematika_tanitasa_1983_XXX_evf_5_6.pdf">Hennyey Judit (1983)</a>
+<a class="btn" data-title="Szilágyi: SMYOZ – Journal of Recreational Mathematics (2006)" href="docs/Szilagyi_SMYOZ_Journal_of_Recreational_Mathematics_Vol_35_No_1_2006.pdf">Szilágyi Miklós (2006)</a>
+</div>
+</section>
+
+</div>
+<h2 class="section-title"></h2>
+<section class="card">
+  <div class="btncol">
+    <a class="btn" href="rejtv/rejtv.html">Rejtvények – megoldások</a>
+  </div>
+  </section>
+
+  <!-- SMYOZ: sorminta kép – alsó, világosabb terület -->
+  <section class="sorminta-panel" aria-label="Sorminta">
+    <div class="sorminta-wrap">
+      <img src="sorminta.png" alt="SMYOZ – sorminta" loading="lazy">
+    </div>
+  </section>
+
+</div>
+<div aria-hidden="true" class="vw" id="vw">
+<div aria-label="Dokumentum" aria-modal="true" class="vw-box" role="dialog">
+<div class="vw-top">
+<div class="vw-cap" id="vwCap"></div>
+<div class="vw-actions">
+<a class="vw-btn" href="#" id="vwOpenNew" rel="noopener" target="_blank">Új fül</a>
+<button class="vw-btn" id="vwBack" type="button" onclick="if(window.SMYOZ_closeVW){SMYOZ_closeVW();} else if(window.SMYOZ_forceCloseVW){SMYOZ_forceCloseVW();}">Vissza</button>
+<button class="vw-btn" id="vwClose" type="button" onclick="if(window.SMYOZ_closeVW){SMYOZ_closeVW();} else if(window.SMYOZ_forceCloseVW){SMYOZ_forceCloseVW();}" >Bezár</button>
+</div>
+</div>
+<div class="vw-body">
+<iframe id="vwFrame" src="" title="Dokumentum megtekintés"></iframe>
+<pre id="vwText" class="vw-text" style="display:none;"></pre>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="lb" id="lb">
+<div aria-label="Képnéző" aria-modal="true" class="lb-box" role="dialog">
+<div class="lb-top">
+<div class="lb-cap" id="lbCap"></div>
+<div class="lb-actions">
+<button class="lb-btn" id="lbPrev" type="button">← Előző</button>
+<button class="lb-btn" id="lbNext" type="button">Következő →</button>
+<button class="lb-btn" id="lbClose" type="button">Bezár</button>
+</div>
+</div>
+<div class="lb-body">
+<img alt="" id="lbImg"/>
+</div>
+</div>
+</div>
+<script>
+  // SMYOZ: biztonsági zárás – akkor is működjön, ha valami JS-hiba megállítaná a fő kódot
+  window.SMYOZ_forceCloseVW = function(){
+    try{
+      var vw = document.getElementById('vw');
+      if (vw) { vw.classList.remove('on'); vw.setAttribute('aria-hidden','true'); }
+      var fr = document.getElementById('vwFrame');
+      if (fr) fr.src = '';
+      document.body.style.overflow = '';
+    } catch(e) {}
+  };
+</script>
+<script>
+  (function(){
+    const vw = document.getElementById('vw');
+    const vwFrame = document.getElementById('vwFrame');
+    const vwText = document.getElementById('vwText');
+    const vwBox = document.querySelector('.vw-box');
+    const vwCap = document.getElementById('vwCap');
+    const vwClose = document.getElementById('vwClose');
+    const vwOpenNew = document.getElementById('vwOpenNew');
+
+    // --- SMYOZ: EXPLORER SEED átadás támogatás (rejtv.html -> index -> EXPLORER iframe) ---
+    let SMYOZ_pendingExplorerSeedText = '';
+    let SMYOZ_pendingExplorerSeedSource = '';
+
+    let SMYOZ_seedSendTimer = null;
+    let SMYOZ_seedSendTries = 0;
+
+    function SMYOZ_stopSeedSendLoop(){
+      try{ if (SMYOZ_seedSendTimer){ clearInterval(SMYOZ_seedSendTimer); SMYOZ_seedSendTimer = null; } }catch(e){}
+      SMYOZ_seedSendTries = 0;
+    }
+
+    function SMYOZ_beginSeedSendLoop(){
+      SMYOZ_stopSeedSendLoop();
+      SMYOZ_seedSendTries = 0;
+      SMYOZ_seedSendTimer = setInterval(function(){
+        SMYOZ_seedSendTries++;
+        SMYOZ_trySendSeedToExplorerFrame();
+        if (SMYOZ_seedSendTries > 20){ SMYOZ_stopSeedSendLoop(); }
+      }, 200);
+    }
+
+    function SMYOZ_trySendSeedToExplorerFrame(){
+      try{
+        if (!SMYOZ_pendingExplorerSeedText) return;
+        const src = String((vwFrame && (vwFrame.getAttribute('src') || vwFrame.src)) || '').toLowerCase();
+        if (src.indexOf('explorer') < 0) return;
+
+        if (vwFrame && vwFrame.contentWindow) {
+          vwFrame.contentWindow.postMessage({
+            type: 'SMYOZ_SEED_TEXT',
+            text: SMYOZ_pendingExplorerSeedText,
+            source: SMYOZ_pendingExplorerSeedSource,
+            autoLoad: true
+          }, '*');
+        }
+        // SMYOZ: a pending-et csak ACK után töröljük (file:// alatt néha kell ismétlés)
+      } catch(e) {}
+    }
+
+    if (vwFrame) {
+      vwFrame.addEventListener('load', SMYOZ_trySendSeedToExplorerFrame);
+    }
+
+    // Külső oldalak (pl. rejtv.html iframe-ben) kérhetik az EXPLORER megnyitását SEED-del
+    window.SMYOZ_b64encodeUtf8 = function(text){
+      try{
+        const enc = new TextEncoder().encode(String(text || ''));
+        let bin = '';
+        for (let i=0; i<enc.length; i++) bin += String.fromCharCode(enc[i]);
+        return btoa(bin);
+      } catch(e){
+        try{ return btoa(String(text || '')); } catch(e2){ return ''; }
+      }
+    };
+
+    window.SMYOZ_openExplorerWithSeedB64 = function(seedB64, sourceLabel){
+      try{
+        const b64 = String(seedB64 || '');
+        const url = b64 ? ('programok/SMYOZ_EXPLORER.html#seedb64=' + encodeURIComponent(b64))
+                        : 'programok/SMYOZ_EXPLORER.html';
+        openVW(url, 'SMYOZ EXPLORER');
+      } catch(e) {}
+    };
+
+    // Külső oldalak (pl. rejtv.html iframe-ben) kérhetik az EXPLORER megnyitását SEED-del
+    window.SMYOZ_openExplorerWithSeed = function(seedText, sourceLabel){
+      try{
+        const t = String(seedText || '');
+        const b64 = window.SMYOZ_b64encodeUtf8(t);
+        window.SMYOZ_openExplorerWithSeedB64(b64, sourceLabel || '');
+      } catch(e) {}
+    };
+
+
+    // SMYOZ: globális beállítások (technikai szöveg + környezet).
+    // Megjegyzés: file:// módban a böngészők localStorage-kezelése eltérhet, ezért a beállításokat
+    // a belső olvasó-ablakban megnyitott HTML oldalaknak query-paramként is átadjuk.
+    const LS_HIDE_TECH = 'SMYOZ_HIDE_TECH';
+    const LS_THEME = 'SMYOZ_THEME';
+
+    const THEMES = [
+      { id: 'alap',  label: 'Alap' },
+      { id: 'sunny', label: 'Acél' },
+      { id: 'mint',  label: 'Mentás' },
+      { id: 'candy', label: 'Konfetti' }
+    ];
+
+    vwFrame.addEventListener('load', function(){
+      try {
+        if (vwFrame && vwFrame.contentWindow) {
+          vwFrame.contentWindow.postMessage({ type: 'SMYOZ_PREF', hideTech: getHideTech(), theme: getTheme() }, '*');
+        }
+      } catch(e) {}
+    });
+
+    const btnTheme = document.getElementById('btnTheme');
+    if (btnTheme) {
+      btnTheme.addEventListener('click', function(){
+        const cur = getTheme();
+        const idx = THEMES.findIndex(x => x.id === cur);
+        const next = THEMES[(idx >= 0 ? (idx + 1) : 1) % THEMES.length].id;
+        setTheme(next);
+      });
+    }
+
+    function getHideTech() { try { return (localStorage.getItem(LS_HIDE_TECH) === '1'); } catch(e) { return false; } }
+    function setHideTech(v) { try { localStorage.setItem(LS_HIDE_TECH, v ? '1' : '0'); } catch(e) {} }
+
+    function getTheme() {
+      let t = ''; try { t = localStorage.getItem(LS_THEME) || ''; } catch(e) { t = ''; }
+      return (t && THEMES.some(x => x.id === t)) ? t : 'alap';
+    }
+    function setTheme(t) {
+      const id = (t && THEMES.some(x => x.id === t)) ? t : 'alap';
+      try { localStorage.setItem(LS_THEME, id); } catch(e) {}
+      applyThemePref();
+      updateThemeBtn();
+    }
+
+    function updateThemeBtn() {
+      const btn = document.getElementById('btnTheme');
+      if (!btn) return;
+      const t = getTheme();
+      const label = (THEMES.find(x => x.id === t) || THEMES[0]).label;
+      btn.textContent = 'Környezet: ' + label;
+    }
+
+    function applyThemePref() {
+      // Először leszedjük a korábbi téma-osztályokat
+      THEMES.forEach(t => document.body.classList.remove('theme-' + t.id));
+      // A kiválasztottat felrakjuk
+      document.body.classList.add('theme-' + getTheme());
+    }
+
+    function addQueryParams(url, params) {
+      try {
+        const u = new URL(url, location.href);
+        Object.keys(params).forEach(k => {
+          if (params[k] !== undefined && params[k] !== null && params[k] !== '') u.searchParams.set(k, String(params[k]));
+        });
+        return u.pathname + u.search + u.hash;
+      } catch (e) {
+        const sep = (url.indexOf('?') >= 0) ? '&' : '?';
+        const q = Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(String(params[k]))).join('&');
+        return url + sep + q;
+      }
+    }
+
+    function addPdfZoom(url) {
+      // Firefox/Chrome beépített PDF-néző jellemzően érti a #zoom=... paramétert.
+      if (!url) return url;
+      if (url.indexOf('#') < 0) return url + '#zoom=125';
+      if (/zoom=/i.test(url)) return url;
+      return url + '&zoom=125';
+    }
+
+/*
+    // Technikai szöveg elrejtése / megjelenítése (helyben eltárolva)
+    const btnTech = document.getElementById('btnTech');
+    function applyTechPref() {
+      const hide = getHideTech();
+      document.body.classList.toggle('hide-tech', hide);
+      if (btnTech) {
+        btnTech.setAttribute('aria-pressed', hide ? 'true' : 'false');
+        btnTech.textContent = hide ? 'Technikai szöveg: BE' : 'Technikai szöveg: KI';
+      }
+    }
+    if (btnTech) {
+      btnTech.addEventListener('click', function(){
+        const cur = getHideTech();
+        setHideTech(!cur);
+        applyTechPref();
+      });
+    }
+    applyTechPref();
+*/
+
+    // SMYOZ: környezet (téma) inicializálása
+    applyThemePref();
+    updateThemeBtn();
+
+    
+function normalizeDocHref(href){
+  if (!href) return href;
+  const s = String(href);
+  const sl = s.toLowerCase();
+  if (sl.startsWith('http:') || sl.startsWith('https:') || sl.startsWith('file:')) return s;
+  if (s.startsWith('/') ) return s;
+  if (sl.startsWith('programok/')) return s;
+  if (sl.startsWith('rejtv/')) return s;
+  if (sl.startsWith('docs/') || sl.startsWith('doc/')) return s;
+  return s;
+}
+
+
+    function programSizeByUrl(url){
+      const u = String(url || '');
+      const ul = u.toLowerCase().split('#')[0].split('?')[0];
+      if (ul.indexOf('smyoz_generator_stat.html') >= 0)   return {w:1440,h:1010};
+      if (ul.indexOf('smyoz_generator_manual.html') >= 0) return {w:1270,h:900};
+      if (ul.indexOf('smyoz_explorer.html') >= 0)         return {w:1230,h:998};
+      return null;
+    }
+    function applyVWBoxSize(sz){
+      if (!vwBox) return;
+      if (sz && sz.w && sz.h){
+        vwBox.style.width = String(sz.w) + 'px';
+        vwBox.style.height = String(sz.h) + 'px';
+      } else {
+        vwBox.style.width = '';
+        vwBox.style.height = '';
+      }
+    }
+function openVW(href, title) {
+      if (!href) return;
+
+      href = normalizeDocHref(href);
+      // SMYOZ: file:// módban is megpróbáljuk iframe-ben megnyitni (Firefox alatt működik).
+      const hrefLower = String(href).toLowerCase().split('#')[0].split('?')[0];
+      const isPdf = hrefLower.endsWith('.pdf');
+      const isText = (hrefLower.endsWith('.txt') || hrefLower.endsWith('.md'));
+
+      // SMYOZ: PDF-eknél kérünk egy kicsit nagyobb nagyítást.
+      let finalHref = href;
+      if (isPdf) finalHref = addPdfZoom(finalHref);
+
+      // SMYOZ: A technikai- és téma-beállítást átadjuk a honlap-oldalaknak.
+      // Programoknál (programok/...) nem erőltetjük, hogy ne kavarjuk meg a futást.
+      const isHtml = hrefLower.endsWith('.html');
+      const isProgram = hrefLower.startsWith('programok/');
+      if (isHtml && !isProgram) {
+        finalHref = addQueryParams(finalHref, {
+          smyHideTech: getHideTech() ? '1' : '0',
+          smyTheme: getTheme()
+        });
+      }
+      vwCap.textContent = title || href;
+      vwOpenNew.href = finalHref;
+      // SMYOZ: a GENERATOR általában szélesebb képernyőt igényel
+      if (vwBox) {
+        const isWide = String(finalHref).toLowerCase().includes('generator');
+        vwBox.classList.toggle('wide', isWide);
+        const isProgram = hrefLower.includes('explorer') || hrefLower.includes('generator') || hrefLower.includes('programok/');
+        vw.classList.toggle('program', isProgram);
+        // Fix méret a programoknak (STAT/MANUAL/EXPLORER)
+        applyVWBoxSize(programSizeByUrl(finalHref));
+      }
+
+      // SMYOZ: villanás csökkentése – előbb nyitunk, utána állítjuk be az src-t
+      if (vwText) { vwText.style.display = 'none'; vwText.textContent=''; }
+      vwFrame.style.display = '';
+      try{ vwFrame.name = ''; }catch(e){}
+      vwFrame.src = '';
+      if (vwText) { vwText.style.display = 'none'; vwText.textContent = ''; }
+      vw.classList.add('on');
+      vw.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(function(){
+    if (isText) {
+        // TXT/MD: file:// alatt ne fetch, hanem iframe (biztosan működik)
+        if (vwText) { vwText.style.display = 'none'; vwText.textContent = ''; }
+        if (vwBox) vwBox.classList.add('txtmode');
+        vwFrame.style.display = '';
+        vwFrame.src = finalHref;
+      } else {
+        if (vwBox) vwBox.classList.remove('txtmode');
+        vwFrame.src = finalHref;
+      }
+  });
+    }
+
+    function closeVW() {
+      vw.classList.remove('on');
+      if (vwBox){ vwBox.classList.remove('txtmode'); vwBox.style.width=''; vwBox.style.height=''; }
+      vw.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      vwFrame.src = '';
+      if (vwText) { vwText.style.display = 'none'; vwText.textContent = ''; }
+      vwOpenNew.href = '#';
+      vwCap.textContent = '';
+    }
+
+    document.querySelectorAll('a.open-vw').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        const title = a.getAttribute('data-title') || a.textContent.trim();
+        if (!href) return;
+        e.preventDefault();
+        openVW(href, title);
+      });
+    });
+
+    vwClose.addEventListener('click', closeVW);
+
+    // Ha „Új fül”-t nyitsz, zárjuk be az olvasóablakot a háttérben,
+    // hogy visszatéréskor ne maradjon ott a sáv.
+    vwOpenNew.addEventListener('click', () => {
+      setTimeout(() => { closeVW(); }, 50);
+    });
+
+    
+
+// SMYOZ: aloldalak (pl. rejtv.html iframe-ben) kérhetik az olvasó bezárását
+window.addEventListener('message', (ev) => {
+  try{
+    const d = ev && ev.data;
+    if (!d) return;
+
+    if (typeof d === 'object' && d.type === 'SMYOZ_OPEN_EXPLORER_WITH_SEEDB64') {
+      window.SMYOZ_openExplorerWithSeedB64(d.seedB64 || '', d.source || '');
+      return;
+    }
+    if (typeof d === 'object' && d.type === 'SMYOZ_OPEN_EXPLORER_WITH_SEED') {
+      window.SMYOZ_openExplorerWithSeed(d.seedText || '', d.source || '');
+      return;
+    }
+    if (d === 'SMYOZ_CLOSE_VW' || (typeof d === 'object' && d.type === 'SMYOZ_CLOSE_VW')) {
+      closeVW();
+    }
+    if (typeof d === 'object' && d.type === 'SMYOZ_SEED_ACK') {
+      // EXPLORER visszajelzett: leállítjuk az ismételt küldést és töröljük a pendinget
+      SMYOZ_stopSeedSendLoop();
+      SMYOZ_pendingExplorerSeedText = '';
+      SMYOZ_pendingExplorerSeedSource = '';
+    }
+  } catch(e) {}
+});
+
+vw.addEventListener('click', (e) => { if (e.target === vw) closeVW(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (!vw.classList.contains('on')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeVW(); return; }
+    });
+  })();
+
+  (function(){
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lbImg');
+    const lbCap = document.getElementById('lbCap');
+    const btnPrev = document.getElementById('lbPrev');
+    const btnNext = document.getElementById('lbNext');
+    const btnClose = document.getElementById('lbClose');
+
+    let gallery = [];
+    let idx = 0;
+
+    function openLB(g, startIdx) {
+      gallery = g.slice();
+      idx = Math.max(0, Math.min(startIdx, gallery.length - 1));
+      render();
+      lb.classList.add('on');
+      lb.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLB() {
+      lb.classList.remove('on');
+      lb.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      gallery = [];
+      idx = 0;
+    }
+
+    function render() {
+      if (!gallery.length) return;
+      const item = gallery[idx];
+      lbImg.src = item.src;
+      lbImg.alt = item.caption;
+      lbCap.textContent = (idx+1) + '/' + gallery.length + ' — ' + item.caption;
+      btnPrev.disabled = (gallery.length < 2);
+      btnNext.disabled = (gallery.length < 2);
+    }
+
+    function next() {
+      if (gallery.length < 2) return;
+      idx = (idx + 1) % gallery.length;
+      render();
+    }
+
+    function prev() {
+      if (gallery.length < 2) return;
+      idx = (idx - 1 + gallery.length) % gallery.length;
+      render();
+    }
+
+    // Wire thumbnails per gallery block
+    document.querySelectorAll('[data-gallery]').forEach(block => {
+      const thumbs = Array.from(block.querySelectorAll('.thumb'));
+      if (!thumbs.length) return;
+
+      const g = thumbs.map(t => {
+        const img = t.querySelector('img');
+        return {
+          src: t.getAttribute('data-img'),
+          caption: t.getAttribute('data-caption') || (img ? img.alt : '')
+        };
+      });
+
+      thumbs.forEach((t, i) => {
+        t.addEventListener('click', () => openLB(g, i));
+      });
+    });
+
+    // Controls
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+    btnClose.addEventListener('click', closeLB);
+    lb.addEventListener('click', (e) => {
+      if (e.target === lb) closeLB();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('on')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeLB(); return; }
+      if (e.key === 'ArrowRight' || e.key === ' ' ) { e.preventDefault(); next(); return; }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); return; }
+    });
+  })();
+  
+</script>
+
+<script>
+(function(){
+  'use strict';
+  function addPdfZoomPageWidth(href){
+    var u = String(href || '');
+    var ul = u.toLowerCase();
+    if (ul.indexOf('.pdf') < 0) return u;
+    if (u.indexOf('#') >= 0) return u;
+    return u + '#zoom=page-width';
+  }
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var href = a.getAttribute('href');
+    if (!href) return;
+    if (String(href).toLowerCase().indexOf('.pdf') < 0) return;
+    var u = addPdfZoomPageWidth(href);
+    if (u !== href) a.setAttribute('href', u);
+  });
+})();
+</script>
+
+
+<script>
+(function SMYOZ_patchRejtvHome(){
+  function patch(){
+    var home = encodeURIComponent(location.href);
+    var as = document.querySelectorAll('a[href]');
+    for (var i=0;i<as.length;i++){
+      var a = as[i];
+      var href = a.getAttribute('href') || '';
+      if (!href) continue;
+      // csak a rejtv/rejtv.html linkeket bővítjük
+      if (href.indexOf('rejtv/rejtv.html') === 0) {
+        if (href.indexOf('home=') !== -1) continue;
+        if (href.indexOf('?') === -1) a.setAttribute('href', href + '?home=' + home);
+        else a.setAttribute('href', href + '&home=' + home);
+      }
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch);
+  else patch();
+})();
+</script>
+</body>
+</html>

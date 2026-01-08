@@ -1,0 +1,35 @@
+SEED: 0
+nVV: 2
+lSZ: 1 - 2 - 2 - 2 - 5
+nKH: 4
+
+lOPZ:
+AL: p01
+BE: p00 m00
+GA: p00 p00 m11
+DE:  00  01  01  10
+
+MATRIX:
+0x  Bx  1pz 2p  1p  0p  0p  Gx  0x 
+0x  Bx  1pz 2p  1p  Dp  0p  Gx  0x 
+0x  Bx  0pz Az  0x  0p  0x  0p  0x 
+0x  0p  0z  Az  0p  Bx  Bx  Bx  0x 
+Gz  Gp  0pz Az  1x  1x  0p  1x  1x 
+0x  0p  0z  Az  2p  2p  Dx  1x  1x 
+0x  Gx  1pz 1p  1p  2p  2p  1p  Dz 
+0x  Gx  2pz 2p  Dz  2x  4x  3x  1x 
+0z  0z  1zz 1z  0z  1z  2z  2z  1z 
+
+PONTOK:
+H H V V H H H H X
+H H H H H H H H X
+H H H H H H H H X
+H H H H H H H H X
+H H H H V H H V X
+H H H H V H H H X
+H H V H H V V H X
+H H V H H V V V X
+X X X X X X X X X
+
+REJTVÉNY: 
+15 39 41 62 88 

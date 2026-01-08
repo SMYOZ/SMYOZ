@@ -1,0 +1,1311 @@
+<!-- SMYOZ GENERATOR v3.0 -->
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<title>SMYOZ GENERATOR_(STAT)_v5.0 - GPT-5</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg:#eef6ff; --fg:#0b2b40; --muted:#3b556b; --card:#fff; --accent:#1976d2;
+    --grid:#cfe9fb; --ship:#123a66; --water:#dff1ff;
+    --island:#0288d1; --green:#00c853; --red:#ff1744;
+    --shadow:0 8px 24px rgba(20,40,60,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--fg); font-family:Arial,Helvetica,sans-serif; min-height:100vh; display:flex; flex-direction:column; gap:10px}
+
+  /* felső két soros infó */
+  header{background:#375e97; color:#fff; padding:12px 10px; text-align:center; font-weight:800; letter-spacing:.3px}
+  .topwrap{display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0}
+  .infoRow{display:flex; gap:12px; width:860px; justify-content:space-between}
+  .ibox{width:270px; background:#ffffff; border:1px solid #cfe1ff; border-radius:8px; box-shadow:var(--shadow); padding:8px 10px; text-align:center}
+  .ibox .cap{font-size:12px; color:var(--muted); margin-bottom:2px}
+  .ibox .val{font-family:"Courier New",monospace; font-weight:800; font-size:14px; min-height:1.2em}
+  .sumRow{width:860px; text-align:center; background:#ffffff; border:1px solid #cfe1ff; border-radius:8px; padding:6px 10px; box-shadow:var(--shadow); font-family:"Courier New",monospace}
+  .sumRow b{font-weight:800}
+
+  /* vezérlősáv */
+  .toolbar{
+    background:#f9fbff; border-top:2px solid #cfe1ff; border-bottom:2px solid #cfe1ff; box-shadow:var(--shadow);
+    padding:10px; display:grid; grid-template-columns: 1.6fr 1.2fr 1fr; gap:10px; align-items:center; justify-content:center;
+    overflow-x:auto; 
+  }
+  .group{display:flex; flex-wrap:nowrap; gap:8px; align-items:center; justify-content:flex-start; white-space:nowrap}
+  select,input[type="number"]{
+    padding:6px 8px; border:1px solid #cbd; border-radius:8px; font-family:"Courier New",monospace;
+  }
+  button{border:0; background:var(--accent); color:#fff; padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:800}
+  button.ghost{background:#e7f0ff; color:#0b2b40}
+  button.dim{opacity:.5; pointer-events:none}
+
+  /* fő terület (két oszlop) */
+  .main{display:grid; grid-template-columns: 38ch 1fr 320px; gap:12px; padding:12px; justify-content:center}
+  .card{background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:12px}
+  h2{margin:0 0 8px}
+  .mono{font-family:"Courier New",monospace; font-size:14px}
+  pre{
+    white-space:pre; font-family:"Courier New",monospace; font-size:13px; line-height:1.25em;
+    background:#fafdff; border:1px solid #cfe1ff; border-radius:8px; padding:8px; overflow:auto; max-height:220px;
+  }
+
+  /* tábla és overlayek – „éjszakai” precíz méret */
+  .frame{position:relative; width:600px; height:600px; background:var(--grid); border:2px solid #123; border-radius:8px; overflow:hidden; margin:0 auto}
+.boardWrap{display:grid; grid-template-columns: auto 600px auto; grid-template-rows: auto 600px auto; align-items:center; justify-items:center; gap:8px; --cell: calc(600px / 9);}
+.idxRow{display:grid; grid-template-columns: repeat(9, var(--cell)); gap:0; width:600px;}
+.idxRow span{display:flex; align-items:center; justify-content:center; width:var(--cell); height:calc(var(--cell) * 0.55); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-weight:800; font-size: calc(var(--cell) * 0.33); color: var(--fg); user-select:none;}
+.idxCol{display:grid; grid-template-rows: repeat(9, var(--cell)); gap:0; height:600px;}
+.idxCol span{display:flex; align-items:center; justify-content:center; width:calc(var(--cell) * 0.65); height:var(--cell); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-weight:800; font-size: calc(var(--cell) * 0.33); color: var(--fg); user-select:none;}
+.noBoardIdx .idxRow, .noBoardIdx .idxCol{display:none !important;}
+
+  #grid{ display:grid; grid-template-columns: repeat(9, 1fr); grid-auto-rows: 1fr; gap:0; width:100%; height:100%; }
+  .cell{border:1px solid rgba(0,0,0,0.08); background:var(--water)}
+  .cell.ship{ background:var(--ship); }
+
+  svg#islands{ position:absolute; inset:0; pointer-events:none; z-index:2 }
+  svg#lines{   position:absolute; inset:0; pointer-events:none; z-index:3 }
+  svg#labels{  position:absolute; inset:0; pointer-events:none; z-index:5 } /* jelek mindig legfelül */
+
+  /* seed panel */
+  .footnote{color:#3b556b; font-size:12px; text-align:center}
+</style>
+
+<style>
+body { margin: 4px; padding: 0; }
+header { padding: 8px 6px; font-size: 18px; }
+.frame { margin: 4px auto; }
+#seedPanel { margin-top: 8px; margin-bottom: 4px; max-height: 260px; overflow-y: auto; }
+button { margin: 2px; }
+.buttons { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+</style>
+
+</head>
+<body>
+<header>SMYOZ GENERATOR_(STAT)_v5.0 - GPT-5</header>
+
+<!-- Felső két soros infópanel -->
+<div class="topwrap">
+  <div class="infoRow">
+    <div class="ibox"><div class="cap">Vízvonalak (össz / aktuális)</div><div class="val" id="vvBox">—</div></div>
+    <div class="ibox"><div class="cap">Szigetek (méretek növekvő sorrendben)</div><div class="val" id="szigBox">—</div></div>
+    <div class="ibox"><div class="cap">Kikötések (össz / aktuális)</div><div class="val" id="khBox">—</div></div>
+    <div style="text-align:center; margin-top:6px;">
+      </div>
+  </div>
+  <div class="sumRow" id="sumRow">Legjobb SEED: — | JÓSÁG: — | Próbálkozások: 0</div>
+</div>
+
+<!-- Vezérlősáv -->
+<div class="toolbar">
+  <div class="group">
+    <label for="styleSel"><b>Stílus:</b></label>
+    <select id="styleSel" class="mono">
+      <option value="none">— nincs kérés —</option>
+      <option value="fewDock">kevés kikötött hajó</option>
+      <option value="manyDock">sok kikötött hajó</option>
+      <option value="smallIsl">kis szigetek</option>
+      <option value="largeIsl">nagy szigetek</option>
+      <option value="fewVV">kevés vízvonal</option>
+      <option value="manyVV">sok vízvonal</option>
+      <option value="manyParallel">sok párhuzamos hajó</option>
+      <option value="fewParallel">kevés párhuzamos hajó</option>
+      <option value="BE_GA_perp">BETA és GAMMA merőlegesek</option>
+      <option value="DEpp">legalább egy DEpp</option>
+      <option value="onlySize2">csak 2-es szigetek</option>
+    </select>
+    <label>Limit:</label>
+    <input type="number" id="attemptLimit" class="mono" min="1" max="10000000" value="1000" title="Próbálkozások száma"/>
+    <button id="runBtn">Keresés indítása</button>
+    <button id="stopBtn" class="ghost dim">STOP</button>
+    <button id="statToggle" class="ghost">STAT KI</button>
+  </div>
+  <div class="group">
+    <label>SEED:</label>
+    <input type="number" id="seedInput" min="11" max="999999" class="mono" value="1" />
+    <button id="newSeed" class="ghost">Új SEED</button>
+  </div>
+  <div class="group">
+    <button id="toggleLabels">Jelek be/ki</button>
+    <button id="saveSeed">SEED.txt mentés</button>
+  </div>
+</div>
+
+<!-- Fő tartalom -->
+<div class="main">
+  <!-- Bal panel: SEED adatok -->
+  <div class="card">
+    <h2>SEED adatok</h2>
+    <div class="mono">SEED: <span id="seedDisp">—</span></div>
+    <div class="mono">Próbálkozások (helyi): <span id="triesDisp">—</span></div>
+    <div class="mono">nVV: <span id="vvDisp">—</span></div>
+    <div class="mono">lSZ: <span id="szDisp">—</span></div>
+    <div class="mono">nKH: <span id="khDisp">—</span></div>
+
+    <div style="margin-top:8px"><b>HAJÓK (rendezett lOPZ):</b></div>
+    <pre id="opzPre">—</pre>
+
+    <div><b>MATRIX:</b></div>
+    <pre id="matrixPre">—</pre>
+
+    <div><b>PONTOK:</b></div>
+    <pre id="pointsPre">—</pre>
+  </div>
+
+  <!-- Jobb panel: Tábla -->
+  <div class="card" style="display:flex; flex-direction:column; align-items:center; gap:10px">
+    <div class="boardWrap" aria-label="Tábla indexekkel">
+      <div></div>
+      <div class="idxRow" aria-hidden="true">
+        <span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span>
+      </div>
+      <div></div>
+
+      <div class="idxCol" aria-hidden="true">
+        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+      </div>
+
+      <div class="frame">
+        <div id="grid"></div>
+        <svg id="islands"></svg>
+        <svg id="lines"></svg>
+        <svg id="labels" viewBox="0 0 9 9"></svg>
+      </div>
+
+      <div class="idxCol" aria-hidden="true">
+        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+      </div>
+
+      <div></div>
+      <div class="idxRow" aria-hidden="true">
+        <span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span>
+      </div>
+      <div></div>
+    </div>
+    <div style="text-align:center; margin-top:6px;">
+      </div>
+  </div>
+
+  <!-- STAT panel (jobb oszlop) -->
+  <div class="card" id="statPanel" style="display:none; flex-direction:column; gap:8px; font-size:13px">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <strong style="color:#294f75">STAT panel</strong>
+      <button id="toggleColorMode" class="ghost">Színes/Hue</button>
+    </div>
+    <div style="text-align:center; font-size:12px; margin-top:2px;">
+      Próbálkozások: <span id="statAttempts">—</span> &nbsp;|&nbsp; Hibátlan: <span id="statSamples">0</span>
+    </div>
+    <canvas id="normStatCanvas" width="260" height="260" style="display:block; margin:6px auto; border:1px solid #cfe1ff; background:#fff; border-radius:8px;"></canvas>
+    <div style="margin-top:6px;">
+      <pre id="statMatrix" style="font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; line-height:1.2; max-height:220px; overflow:auto; border:1px solid #cfe1ff; background:#fafdff; border-radius:8px; padding:6px;">—</pre>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:12px;">
+      <span>min: <span id="normMin">—</span></span>
+      <button id="pauseResumeBtn" class="ghost">SZÜNET</button>
+      <span>max: <span id="normMax">—</span></span>
+    </div>
+    <div style="text-align:center; margin-top:6px;">
+        <div style="text-align:center; margin-top:6px;">
+      <button id="saveStatBtn" class="ghost" title="SZÜNET módban aktív">STAT.txt mentés</button>
+    </div>
+  </div></div>
+</div>
+
+<script>
+/* ===== Alap ===== */
+const N=9;
+const ELEVEN=1;
+const SHIP_SPECS=[
+  {name:'AL', size:4, count:1},
+  {name:'BE', size:3, count:2},
+  {name:'GA', size:2, count:3},
+  {name:'DE', size:1, count:4}
+];
+
+const gridEl=document.getElementById('grid');
+const svgIsl=document.getElementById('islands');
+const svgLin=document.getElementById('lines');
+const svgLbl=document.getElementById('labels');
+
+const seedDisp=document.getElementById('seedDisp');
+const triesDisp=document.getElementById('triesDisp');
+const vvDisp=document.getElementById('vvDisp');
+const szDisp=document.getElementById('szDisp');
+const khDisp=document.getElementById('khDisp');
+
+const vvBox=document.getElementById('vvBox');
+const szigBox=document.getElementById('szigBox');
+const khBox=document.getElementById('khBox');
+const sumRow=document.getElementById('sumRow');
+
+const opzPre=document.getElementById('opzPre');
+const matrixPre=document.getElementById('matrixPre');
+const pointsPre=document.getElementById('pointsPre');
+
+let SHOW_LABELS=false;
+let SEARCHING=false;
+let stopRequested=false;
+let totalTried=0; window.totalTried = 0;
+let best = { goodness:-Infinity, seed:null, snapshot:null };
+let vizTimer=null; // 15s-enkénti vizualizáció
+
+/* ===== RNG, segédek ===== */
+function rng(seed){ let s=Math.max(ELEVEN,Math.min(999999, seed|0));
+  return ()=>{ s=(s*1103515245+12345)&0x7fffffff; return (s>>>8)/0x7fffff; };
+}
+function inBounds(r,c){ return r>=0 && r<N && c>=0 && c<N; }
+function isCornerCell(r,c){ return (r===0||r===N-1)&&(c===0||c===N-1); }
+function shipCells(r,c,size,orient){ const out=[]; for(let k=0;k<size;k++) out.push([r+(orient? k:0), c+(orient? 0:k)]); return out; }
+function makeEmptyState(){ return { g:Array.from({length:N},()=>Array(N).fill(0)), ships:[] }; }
+function expandList(specs){ const L=[]; for(const s of specs) for(let i=0;i<s.count;i++) L.push({name:s.name,size:s.size}); L.sort((a,b)=>b.size-a.size); return L; }
+function buildGridDOM(){ gridEl.innerHTML=''; for(let r=0;r<N;r++) for(let c=0;c<N;c++){ const d=document.createElement('div'); d.className='cell'; d.dataset.r=r; d.dataset.c=c; gridEl.appendChild(d);} }
+function renderBoard(state){ gridEl.querySelectorAll('.cell').forEach(el=>el.classList.remove('ship')); for(const s of state.ships){ for(const [r,c] of s.cells){ const el=gridEl.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`); if(el) el.classList.add('ship'); } } }
+function getMetrics(){ const rect=gridEl.getBoundingClientRect(); const w=rect.width,h=rect.height; return {w,h,cw:w/N,ch:h/N}; }
+
+/* ===== 5 szabály ===== */
+function cellsSet(cells){ return new Set(cells.map(([r,c])=>r+','+c)); }
+function noTouch(boardG,cells){ const own=cellsSet(cells); for(const [r,c] of cells){ for(let dr=-1;dr<=1;dr++){ for(let dc=-1;dc<=1;dc++){ const rr=r+dr,cc=c+dc; if(!inBounds(rr,cc)) continue; if(boardG[rr][cc]===1 && !own.has(rr+','+cc)) return false; } } } return true; }
+function dockingRuleOK(cells){ for(const [r,c] of cells) if(isCornerCell(r,c)) return false; const touches=cells.filter(([r,c])=>r===0||r===N-1||c===0||c===N-1); if(touches.length===0) return true; if(touches.length>1) return false; const first=cells[0], last=cells[cells.length-1], t=touches[0]; return (t[0]===first[0]&&t[1]===first[1]) || (t[0]===last[0]&&t[1]===last[1]); }
+function apexRuleOK(newCells,ships){ const newEnds=newCells.length===1?[newCells[0],newCells[0]]:[newCells[0],newCells[newCells.length-1]]; const existingEnds=[]; for(const s of ships){ const cs=s.cells; if(cs.length===1) existingEnds.push(cs[0],cs[0]); else existingEnds.push(cs[0],cs[cs.length-1]); } const tooClose=(a,b)=>{ const [ar,ac]=a,[br,bc]=b; if(ar===br){return (Math.abs(ac-bc)-1)<2;} if(ac===bc){return (Math.abs(ar-br)-1)<2;} return false; }; for(const a of newEnds) for(const b of existingEnds) if(tooClose(a,b)) return false; return true; }
+function centerTimes2(cells){ const rs=cells.map(x=>x[0]), cs=cells.map(x=>x[1]); return {r2:Math.min(...rs)+Math.max(...rs), c2:Math.min(...cs)+Math.max(...cs)}; }
+function centerRuleOK(cells,name,ships){ const nc=centerTimes2(cells); for(const s of ships){ if(s.name!==name) continue; const sc=centerTimes2(s.cells); if(sc.r2===nc.r2 || sc.c2===nc.c2) return false; } return true; }
+function sideRuleOK(newCells,ships){ const nRs=newCells.map(x=>x[0]), nCs=newCells.map(x=>x[1]); const nRmin=Math.min(...nRs), nRmax=Math.max(...nRs), nCmin=Math.min(...nCs), nCmax=Math.max(...nCs); const nOrient=(nRmin===nRmax)?'H':'V'; for(const s of ships){ const cs=s.cells; const aRs=cs.map(x=>x[0]), aCs=cs.map(x=>x[1]); const aRmin=Math.min(...aRs), aRmax=Math.max(...aRs), aCmin=Math.min(...aCs), aCmax=Math.max(...aCs); const aOrient=(aRmin===aRmax)?'H':'V'; if(aOrient!==nOrient) continue; if(nOrient==='H'){ const overlap=Math.max(0, Math.min(nCmax,aCmax)-Math.max(nCmin,aCmin)+1); if(overlap>=2){ const gap=Math.abs(nRmin-aRmin)-1; if(gap<2) return false; } } else { const overlap=Math.max(0, Math.min(nRmax,aRmax)-Math.max(nRmin,aRmin)+1); if(overlap>=2){ const gap=Math.abs(nCmin-aCmin)-1; if(gap<2) return false; } } } return true; }
+function validate(state,r,c,size,orient,name){ const cells=shipCells(r,c,size,orient); for(const [rr,cc] of cells) if(!inBounds(rr,cc)||isCornerCell(rr,cc)||state.g[rr][cc]===1) return false; if(!noTouch(state.g,cells)) return false; if(!dockingRuleOK(cells)) return false; if(!apexRuleOK(cells,state.ships)) return false; if(!centerRuleOK(cells,name,state.ships)) return false; if(!sideRuleOK(cells,state.ships)) return false; return true; }
+
+/* ===== Elhelyezés (determin. SEED) ===== */
+function placeAll(seed){
+  const rand=rng(seed); const state=makeEmptyState(); const list=expandList(SHIP_SPECS); let tries=0;
+  function shuf(size){ const a=[]; for(let o=0;o<2;o++){ const maxR=o?N-size:N-1, maxC=o?N-1:N-size; for(let r=0;r<=maxR;r++) for(let c=0;c<=maxC;c++) a.push([r,c,o]); } for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function bt(idx){ if(idx>=list.length) return true; const spec=list[idx], cand=shuf(spec.size); for(const [r,c,o] of cand){ tries++; if(!validate(state,r,c,spec.size,o,spec.name)) continue; const cells=shipCells(r,c,spec.size,o); for(const [rr,cc] of cells) state.g[rr][cc]=1; state.ships.push({name:spec.name,size:spec.size,cells,orient:o}); if(bt(idx+1)) return true; for(const [rr,cc] of cells) state.g[rr][cc]=0; state.ships.pop(); } return false; }
+  const ok=bt(0); return ok? {state,tries}:null;
+}
+
+/* ===== 2. fázis: sor/oszlop vonalak ===== */
+function computeRowInfo(state){
+  const info=[];
+  for(let r=0;r<N;r++){
+    const list=[];
+    for(const s of state.ships){
+      const cols=s.cells.filter(([rr,_])=>rr===r).map(([_,cc])=>cc);
+      if(cols.length) list.push({ship:s,cmin:Math.min(...cols),cmax:Math.max(...cols)});
+    }
+    if(list.length===0) info.push({mode:'full-green',r});
+    else if(list.length===1) info.push({mode:'single-green',r,ship:list[0].ship,cmin:list[0].cmin,cmax:list[0].cmax});
+    else{ let left=list[0], right=list[0]; for(const it of list){ if(it.cmin<left.cmin) left=it; if(it.cmax>right.cmax) right=it; } info.push({mode:'red-between', r, leftEnd:left.cmax, rightStart:right.cmin, list}); }
+  }
+  return info;
+}
+function computeColInfo(state){
+  const info=[];
+  for(let c=0;c<N;c++){
+    const list=[];
+    for(const s of state.ships){
+      const rows=s.cells.filter(([rr,cc])=>cc===c).map(([rr,_])=>rr);
+      if(rows.length) list.push({ship:s,rmin:Math.min(...rows),rmax:Math.max(...rows)});
+    }
+    if(list.length===0) info.push({mode:'full-green',c});
+    else if(list.length===1) info.push({mode:'single-green',c,ship:list[0].ship,rmin:list[0].rmin,rmax:list[0].rmax});
+    else{ let top=list[0], bottom=list[0]; for(const it of list){ if(it.rmin<top.rmin) top=it; if(it.rmax>bottom.rmax) bottom=it; } info.push({mode:'red-between', c, topEnd:top.rmax, bottomStart:bottom.rmin, list}); }
+  }
+  return info;
+}
+function drawLines(rowInfo,colInfo){
+  const {w,h,cw,ch}=getMetrics();
+  svgLin.innerHTML=''; svgLin.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  function L(x1,y1,x2,y2,color,thick=5)
+  { 
+       const l=document.createElementNS('http://www.w3.org/2000/svg','line'); 
+	   l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2); 
+	   l.setAttribute('stroke',color); l.setAttribute('stroke-width',thick); l.setAttribute('stroke-linecap','round');
+	   svgLin.appendChild(l); 
+  }
+  // finom háló
+  for(let i=0;i<=N;i++){ const x=i*cw,y=i*ch;
+    const v=document.createElementNS('http://www.w3.org/2000/svg','line'); v.setAttribute('x1',x); v.setAttribute('y1',0); v.setAttribute('x2',x); v.setAttribute('y2',h); v.setAttribute('stroke','rgba(0,0,0,0.06)'); v.setAttribute('stroke-width',1); svgLin.appendChild(v);
+    const q=document.createElementNS('http://www.w3.org/2000/svg','line'); q.setAttribute('x1',0); q.setAttribute('y1',y); q.setAttribute('x2',w); q.setAttribute('y2',y); q.setAttribute('stroke','rgba(0,0,0,0.06)'); q.setAttribute('stroke-width',1); svgLin.appendChild(q);
+  }
+  // sorok
+  for(const seg of rowInfo){
+    const y=seg.r*ch+ch/2;
+    if(seg.mode==='full-green'){ L(0,y,w,y,'var(--green)'); }
+    else if(seg.mode==='single-green'){ L(seg.cmin*cw,y,(seg.cmax+1)*cw,y,'var(--green)'); }
+    else{ const start=(seg.leftEnd+1)*cw, end=seg.rightStart*cw; if(end-start>0) L(start,y,end,y,'var(--red)'); }
+  }
+  // oszlopok
+  for(const seg of colInfo){
+    const x=seg.c*cw+cw/2;
+    if(seg.mode==='full-green'){ L(x,0,x,h,'var(--green)'); }
+    else if(seg.mode==='single-green'){ L(x,seg.rmin*ch,x,(seg.rmax+1)*ch,'var(--green)'); }
+    else{ const start=(seg.topEnd+1)*ch, end=seg.bottomStart*ch; if(end-start>0) L(x,start,x,end,'var(--red)'); }
+  }
+}
+
+/* ===== 3. fázis: vízpontok + szigetek ===== */
+function computeWaterPoints(state){
+  const pts=new Map();
+  for(let r0=1;r0<=N-1;r0++) for(let c0=1;c0<=N-1;c0++){
+    const adj=[[r0-1,c0-1],[r0-1,c0],[r0,c0-1],[r0,c0]];
+    const covered=adj.some(([rr,cc])=>state.g[rr][cc]===1);
+    if(!covered) pts.set(r0+','+c0,{r:r0,c:c0});
+  }
+  return pts;
+}
+function bfsIslands(pts){
+  const seen=new Set(), sizes=[];
+  function key(r,c){return r+','+c;}
+  for(const [k,p] of pts){ if(seen.has(k)) continue; let q=[p],idx=0; seen.add(k); let size=0;
+    while(idx<q.length){ const cur=q[idx++]; size++; for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nr=cur.r+dr,nc=cur.c+dc,nk=key(nr,nc); if(pts.has(nk)&&!seen.has(nk)){ seen.add(nk); q.push(pts.get(nk)); } } }
+    sizes.push(size);
+  }
+  sizes.sort((a,b)=>a-b); return sizes;
+}
+function drawIslands(pts){
+  const {w,h,cw,ch}=getMetrics();
+  svgIsl.innerHTML=''; svgIsl.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  const r=Math.max(3,Math.min(cw,ch)*0.08), stroke=Math.max(2,Math.min(cw,ch)*0.06), added=new Set();
+  for(const [key,p] of pts){ const cx=p.c*cw, cy=p.r*ch;
+    for(const [nr,nc] of [[p.r+1,p.c],[p.r,p.c+1]]){ const k=nr+','+nc; if(pts.has(k)){ const nx=nc*cw, ny=nr*ch; const ek=(key<k)? key+'|'+k : k+'|'+key; if(!added.has(ek)){ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',cx); l.setAttribute('y1',cy); l.setAttribute('x2',nx); l.setAttribute('y2',ny); l.setAttribute('stroke','var(--island)'); l.setAttribute('stroke-width',stroke); l.setAttribute('stroke-linecap','round'); svgIsl.appendChild(l); added.add(ek);} } } }
+  for(const [_,p] of pts){ const cx=p.c*cw,cy=p.r*ch; const circ=document.createElementNS('http://www.w3.org/2000/svg','circle'); circ.setAttribute('cx',cx); circ.setAttribute('cy',cy); circ.setAttribute('r',r); circ.setAttribute('fill','var(--island)'); svgIsl.appendChild(circ); }
+}
+
+/* ===== Jelek (mostantól: vízmezőkön is jelöljük a színt) ===== */
+function buildMarksGrid(){ return Array.from({length:N},()=>Array.from({length:N},()=>'')); }
+function addMark(m,r,c,ch){
+  const cur=m[r][c];
+  if(!cur){ m[r][c]=ch; return; }
+  // összevonás p/z → pp/zz/pz
+  const S = new Set(cur.split(''));
+  for(const k of ch.split('')) S.add(k);
+  const s = Array.from(S).sort().join('');
+  if(s==='p' && cur==='p') m[r][c]='pp';
+  else if(s==='z' && cur==='z') m[r][c]='zz';
+  else if(s==='pz') m[r][c]='pz';
+  else m[r][c]=s;
+}
+function fillMarksGrid(marks,rowInfo,colInfo,state){
+  // SOROK
+  for(const seg of rowInfo){
+    const r=seg.r;
+    if(seg.mode==='full-green'){
+      for(let c=0;c<N;c++) addMark(marks,r,c,'z');     // teljes sor ZÖLD → vízmezőkön is!
+    }else if(seg.mode==='single-green'){
+      for(let c=seg.cmin; c<=seg.cmax; c++) addMark(marks,r,c,'z'); // hajó kiterjedésén belül
+    }else{ // red-between
+      const L=seg.leftEnd+1, R=seg.rightStart-1;
+      if(L<=R) for(let c=L;c<=R;c++) addMark(marks,r,c,'p');        // Piros minden érintett mezőn
+    }
+  }
+  // OSZLOPOK
+  for(const seg of colInfo){
+    const c=seg.c;
+    if(seg.mode==='full-green'){
+      for(let r=0;r<N;r++) addMark(marks,r,c,'z');
+    }else if(seg.mode==='single-green'){
+      for(let r=seg.rmin; r<=seg.rmax; r++) addMark(marks,r,c,'z');
+    }else{ // red-between
+      const T=seg.topEnd+1, B=seg.bottomStart-1;
+      if(T<=B) for(let r=T;r<=B;r++) addMark(marks,r,c,'p');
+    }
+  }
+}
+function drawLabels(state, waterPts, marks){
+  svgLbl.innerHTML=''; svgLbl.style.display=SHOW_LABELS?'block':'none';
+  function addText(x,y,txt,color='#062e4f',size=0.42,weight='800'){ const t=document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x',x+0.5); t.setAttribute('y',y+0.6); t.setAttribute('text-anchor','middle'); t.setAttribute('font-family','monospace'); t.setAttribute('font-size',size.toString()); t.setAttribute('font-weight',weight); t.setAttribute('fill',color); t.textContent=txt; svgLbl.appendChild(t); }
+  function addSub(x,y,txt,color='#153c5d',size=0.28,weight='700'){ if(!txt) return; const t=document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x',x+0.5); t.setAttribute('y',y+0.9); t.setAttribute('text-anchor','middle'); t.setAttribute('font-family','monospace'); t.setAttribute('font-size',size.toString()); t.setAttribute('font-weight',weight); t.setAttribute('fill',color); t.textContent=txt.toLowerCase(); svgLbl.appendChild(t); }
+  function waterCornersCount(r,c){ let cnt=0; const corners=[[r,c],[r+1,c],[r,c+1],[r+1,c+1]]; for(const [pr,pc] of corners){ if(pr>=1&&pr<=N-1&&pc>=1&&pc<=N-1){ if(waterPts.has(pr+','+pc)) cnt++; } } return cnt; }
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    if(state.g[r][c]===1){
+      const ship=state.ships.find(s=>s.cells.some(([rr,cc])=>rr===r&&cc===c));
+      const code= ship.name==='AL'?'A': ship.name==='BE'?'B': ship.name==='GA'?'G':'D';
+      addText(c,r,code,'#ffffff'); // hajó: fehér fő betű
+    }else{
+      addText(c,r,String(waterCornersCount(r,c)),'#062e4f'); // víz: kék szám
+    }
+    const mk=marks[r][c]; 
+    // a szín-jel mindig látszódjon: hajón világos, vízen sötétebb
+    const subColor = (state.g[r][c]===1) ? '#f6f7ff' : '#153c5d';
+    addSub(c,r,mk,subColor);
+  }
+}
+
+/* ===== lOPZ, PONTOK, KPI ===== */
+function computeLOPZ(state,rowInfo,colInfo){
+  const perShip=new Map(); for(const s of state.ships) perShip.set(s,{P:0,Z:0});
+  for(const seg of rowInfo){
+    if(seg.mode==='single-green'){ perShip.get(seg.ship).Z++; }
+    else if(seg.mode==='red-between'){
+      const L=seg.leftEnd+1,R=seg.rightStart-1;
+      if(L<=R){
+        for(const it of seg.list){
+          const cols=it.ship.cells.filter(([rr,_])=>rr===seg.r).map(([_,cc])=>cc);
+          if(cols.some(cc=>cc>=L&&cc<=R)) perShip.get(it.ship).P++;
+        }
+      }
+    }
+  }
+  for(const seg of colInfo){
+    if(seg.mode==='single-green'){ perShip.get(seg.ship).Z++; }
+    else if(seg.mode==='red-between'){
+      const T=seg.topEnd+1,B=seg.bottomStart-1;
+      if(T<=B){
+        for(const it of seg.list){
+          const rows=it.ship.cells.filter(([rr,cc])=>cc===seg.c).map(([rr,_])=>rr);
+          if(rows.some(rr=>rr>=T&&rr<=B)) perShip.get(it.ship).P++;
+        }
+      }
+    }
+  }
+  const alfa=state.ships.find(s=>s.name==='AL'); const alfaOrient=(alfa && alfa.cells[0][0]===alfa.cells[alfa.cells.length-1][0])?'H':'V';
+  function O_of(s){ if(s.name==='DE') return ' '; const sOrient=(s.cells[0][0]===s.cells[s.cells.length-1][0])?'H':'V'; return (sOrient===alfaOrient)?'p':'m'; }
+  const out={AL:[],BE:[],GA:[],DE:[]};
+  for(const s of state.ships){ const {P,Z}=perShip.get(s); out[s.name].push(`${O_of(s)}${P}${Z}`); }
+  const ord={'p':0,'m':1,' ':2}; function sortG(a){return a.slice().sort((x,y)=>{ if(ord[x[0]]!==ord[y[0]]) return ord[x[0]]-ord[y[0]]; return parseInt(x.slice(1),10)-parseInt(y.slice(1),10); });}
+  out.AL=sortG(out.AL); out.BE=sortG(out.BE); out.GA=sortG(out.GA); out.DE=sortG(out.DE);
+  return out;
+}
+function buildPointsMatrix(state){
+  const P=Array.from({length:N},()=>Array(N).fill('X'));
+  for(let r=0;r<N-1;r++) for(let c=0;c<N-1;c++){
+    const adj=[[r,c],[r,c+1],[r+1,c],[r+1,c+1]];
+    const hasShip=adj.some(([rr,cc])=>state.g[rr][cc]===1);
+    P[r][c]=hasShip?'H':'V';
+  }
+  return P;
+}
+function countDocked(state){
+  let n=0;
+  for(const s of state.ships){
+    const ends=s.cells.length===1?[s.cells[0]]:[s.cells[0],s.cells[s.cells.length-1]];
+    const touch=ends.filter(([r,c])=>r===0||r===N-1||c===0||c===N-1);
+    if(touch.length===1) n++;
+  }
+  return n;
+}
+
+/* ===== SEED.txt ===== */
+function buildSeedText(seed,state,rowInfo,colInfo,marks,waterPts,islands){
+  const nVV=rowInfo.filter(x=>x.mode==='full-green').length + colInfo.filter(x=>x.mode==='full-green').length;
+  const lSZ=islands.join(' - ');
+  const nKH=countDocked(state);
+  const lOPZ=computeLOPZ(state,rowInfo,colInfo);
+  function toCode(r,c){
+    const mk0 = marks[r][c] || "";
+    const mk = (mk0==="") ? "x" : mk0;
+    if(state.g[r][c]===1){
+      const ship=state.ships.find(s=>s.cells.some(([rr,cc])=>rr===r&&cc===c));
+      const base= ship.name==='AL'?'A': ship.name==='BE'?'B': ship.name==='GA'?'G':'D';
+      let txt = base + mk;
+      while(txt.length<3) txt += " ";
+      return txt;
+    }else{
+      let cnt=0; const corners=[[r,c],[r+1,c],[r,c+1],[r+1,c+1]];
+      for(const [pr,pc] of corners){ if(pr>=1&&pr<=N-1&&pc>=1&&pc<=N-1){ if(waterPts.has(pr+','+pc)) cnt++; } }
+      let txt = String(cnt) + mk;
+      while(txt.length<3) txt += " ";
+      return txt;
+    }
+  }
+  const P=buildPointsMatrix(state);
+  let txt=''; 
+  txt+=`SEED: ${seed}\n`; 
+  txt+=`nVV: ${nVV}\n`; 
+  txt+=`lSZ: ${lSZ||''}\n`; 
+  txt+=`nKH: ${nKH}\n\n`; 
+  txt+=`lOPZ:\n`;
+  for(const code of ['AL','BE','GA','DE']) txt+=`${code}: ${(lOPZ[code]||[]).join(' ')}\n`;
+  txt+=`\nMATRIX:\n`;
+  for(let r=0;r<N;r++){ let row=[]; for(let c=0;c<N;c++) row.push(toCode(r,c)); txt+=row.join(' ')+'\n'; }
+  txt+=`\nPONTOK:\n`; 
+  for(let r=0;r<N;r++) txt+=P[r].join(' ')+'\n';
+    // ROWVEC / COLVEC kiírása
+  const rowVec = rowInfo.map(seg => seg.mode==='full-green' ? 'V' : (seg.mode==='single-green' ? 'Z' : 'P'));
+  const colVec = colInfo.map(seg => seg.mode==='full-green' ? 'V' : (seg.mode==='single-green' ? 'Z' : 'P'));
+  txt += `
+VONALAK:
+`;
+  txt += `SOROK:   ${rowVec.join(' ')}
+`;
+  txt += `OSZLOPOK: ${colVec.join(' ')}
+`;
+
+  return {txt,nVV,nKH,lOPZ};
+}
+
+/* ===== JÓSÁG + stop feltételek ===== */
+function countDEpp(state,rowInfo,colInfo){
+  const redRows=new Map(); for(const seg of rowInfo) if(seg.mode==='red-between'){ const L=seg.leftEnd+1, R=seg.rightStart-1; if(L<=R) redRows.set(seg.r,[L,R]); }
+  const redCols=new Map(); for(const seg of colInfo) if(seg.mode==='red-between'){ const T=seg.topEnd+1, B=seg.bottomStart-1; if(T<=B) redCols.set(seg.c,[T,B]); }
+  let cnt=0;
+  for(const s of state.ships){ if(s.name!=='DE') continue; const [r,c]=s.cells[0];
+    const rowSeg=redRows.get(r), colSeg=redCols.get(c);
+    if(rowSeg && colSeg){ const [L,R]=rowSeg,[T,B]=colSeg; if(c>=L&&c<=R && r>=T&&r<=B) cnt++; }
+  }
+  return cnt; // 0..2
+}
+function countParallel(state){
+  let H=0,V=0;
+  for(const s of state.ships){ if(s.name==='DE') continue; const h = (s.cells[0][0]===s.cells[s.cells.length-1][0]); if(h) H++; else V++; }
+  return Math.max(H,V);
+}
+function allIslandsSize2(islands){ if(islands.length===0) return false; return islands.every(x=>x===2); }
+function BE_GA_perpendicular(state){
+  const BE=state.ships.filter(s=>s.name==='BE');
+  const GA=state.ships.filter(s=>s.name==='GA');
+  if(BE.length!==2 || GA.length!==3) return false;
+  const beOr=BE.map(s=> (s.cells[0][0]===s.cells[s.cells.length-1][0])?'H':'V');
+  const gaOr=GA.map(s=> (s.cells[0][0]===s.cells[s.cells.length-1][0])?'H':'V');
+  const allEqual = arr => arr.every(x=>x===arr[0]);
+  return allEqual(beOr) && allEqual(gaOr) && (beOr[0]!==gaOr[0]);
+}
+function evaluateGoodness(style, seed){
+  const placed=placeAll(seed);
+  if(!placed) return {ok:false};
+  const state=placed.state;
+  const rowInfo=computeRowInfo(state);
+  const colInfo=computeColInfo(state);
+  const waterPts=computeWaterPoints(state);
+  const islands=bfsIslands(waterPts);
+
+  const nVV=rowInfo.filter(x=>x.mode==='full-green').length + colInfo.filter(x=>x.mode==='full-green').length;
+  const nKH=countDocked(state);
+  const maxIsl = islands.length? islands[islands.length-1] : 0;
+  const cntMax = islands.filter(x=>x===maxIsl).length;
+  const par = countParallel(state);
+  const depp = countDEpp(state,rowInfo,colInfo);
+  const bega = BE_GA_perpendicular(state);
+
+  let goodness=0, stop=false;
+  switch(style){
+    case 'fewDock': goodness = -nKH; stop = (nKH<=1); break;
+    case 'manyDock': goodness = +nKH; stop = (nKH>=10); break;
+    case 'smallIsl': goodness = -(100*maxIsl + cntMax); stop = (maxIsl<=2); break;
+    case 'largeIsl': goodness = +maxIsl; stop = (maxIsl>=24); break;
+    case 'fewVV': goodness = -nVV; stop = (nVV<=0); break;
+    case 'manyVV': goodness = +nVV; stop = (nVV>=5); break;
+    case 'manyParallel': goodness = +par; stop = (par>=6); break;
+    case 'fewParallel': goodness = -par; stop = (par<=3); break;
+    case 'BE_GA_perp': { const ok=bega; goodness = ok?1:0; stop = ok; break; }
+    case 'DEpp': goodness = depp; stop = (depp>=2); break;
+    case 'onlySize2': { const ok = allIslandsSize2(islands); goodness = ok?1:0; stop = ok; break; }
+    case 'none':
+    default: goodness = 0; stop = true; break;
+  }
+
+  return { ok:true, goodness, stop, state, rowInfo, colInfo, waterPts, islands, tries:placed.tries, nVV, nKH };
+}
+
+/* ===== Rajz + SEED adatok frissítése ===== */
+function fillMarksAndRender(seed, pack){
+  const {state,rowInfo,colInfo,waterPts,islands,tries,nVV,nKH}=pack;
+
+  // Szín-jelölések – mostantól vízmezőkön is
+  const marks=buildMarksGrid(); 
+  fillMarksGrid(marks,rowInfo,colInfo,state);
+
+  buildGridDOM();
+setStatToggleUI(); 
+  renderBoard(state); 
+  drawLines(rowInfo,colInfo); 
+  drawIslands(waterPts); 
+  drawLabels(state,waterPts,marks);
+
+  const {txt,lOPZ}=buildSeedText(seed,state,rowInfo,colInfo,marks,waterPts,islands);
+
+  // bal panel
+  seedDisp.textContent=String(seed);
+  triesDisp.textContent=String(tries);
+  vvDisp.textContent=String(nVV);
+  khDisp.textContent=String(nKH);
+  szDisp.textContent=islands.length? islands.join(' - '): '—';
+
+  // felső fix dobozok
+  vvBox.textContent = `${nVV} / ${nVV}`;
+  khBox.textContent = `${nKH} / ${nKH}`;
+  szigBox.textContent = islands.length? islands.join(' - ') : '—';
+
+  // Hajók (lOPZ) – rendezett
+  let lopzLines=[]; for(const code of ['AL','BE','GA','DE']) lopzLines.push(`${code}: ${(lOPZ[code]||[]).join(' ')}`);
+  opzPre.textContent = lopzLines.join('\n');
+
+  // MATRIX + PONTOK
+  const lines = txt.split('\n');
+  const mIdx = lines.findIndex(l=>/^MATRIX:/i.test(l));
+  const pIdx = lines.findIndex(l=>/^PONTOK:/i.test(l));
+  if(mIdx>=0 && pIdx>mIdx){
+    matrixPre.textContent = lines.slice(mIdx+1, pIdx-1).join('\n');
+    pointsPre.textContent = lines.slice(pIdx+1).join('\n');
+  }else{
+    matrixPre.textContent='—'; pointsPre.textContent='—';
+  }
+
+  // mentéshez
+  const saveBtn = document.getElementById('saveSeed');
+  saveBtn.dataset.seedtxt = txt;
+  saveBtn.dataset.seed = String(seed);
+}
+
+/* ===== UI állapot ===== */
+function setSearchingUI(on){
+  SEARCHING=on;
+  document.getElementById('runBtn').classList.toggle('dim', on);
+  document.getElementById('stopBtn').classList.toggle('dim', !on);
+  document.getElementById('newSeed').classList.toggle('dim', on);
+  document.getElementById('toggleLabels').classList.toggle('dim', on);
+  document.getElementById('saveSeed').classList.toggle('dim', on);
+}
+
+/* ===== Vizualizáció időzítő („dobogás”) ===== */
+function startVizTimer(){ stopVizTimer(); vizTimer = setInterval(()=>{ if(best.snapshot) fillMarksAndRender(best.seed, best.snapshot); }, 15000); }
+function stopVizTimer(){ if(vizTimer){ clearInterval(vizTimer); vizTimer=null; } }
+
+/* ===== Futtatás / keresés (aszinkron, leállítható) ===== */
+async function runSearch(){
+  // STAT mód: ha BE és stílus = 'none', indítsuk a slideshow ciklust
+  try {
+    const styleSel = document.getElementById('styleSel');
+    const style = styleSel ? styleSel.value : 'none';
+    if (window.statMode === true && style === 'none') {
+      runStatSlideshow();
+      return;
+    }
+  } catch(e){ console.warn(e); }
+
+  stopRequested=false; totalTried=0; window.totalTried=0;
+  best = { goodness:-Infinity, seed:null, snapshot:null };
+  setSearchingUI(true);
+
+  const style = document.getElementById('styleSel').value;
+  const limit = Math.max(1, Math.min(1e7, (document.getElementById('attemptLimit').value|0))) || 1000;
+
+  // első SEED: felhasználói input – azonnali vizualizáció
+  let seed = Math.max(ELEVEN, Math.min(999999, (document.getElementById('seedInput').value|0))) || ELEVEN;
+  let pack = evaluateGoodness(style, seed);
+  if(pack.ok){
+    totalTried++; window.totalTried = totalTried;
+    if(pack.goodness > best.goodness){ best={goodness:pack.goodness, seed, snapshot:pack}; }
+    fillMarksAndRender(seed, pack);
+    sumRow.textContent = `Legjobb SEED: ${seed} | JÓSÁG: ${pack.goodness} | Próbálkozások: ${totalTried}`;
+    if(pack.stop){ setSearchingUI(false); return; }
+  }
+
+  // indul az időzített vizualizáció
+  startVizTimer();
+
+  // további próbálkozások
+  for(let i=totalTried; i<limit; i++){
+    if(stopRequested){ break; }
+    seed = Math.floor(Math.random()*999999)+ELEVEN;
+    pack = evaluateGoodness(style, seed);
+    if(!pack.ok){ continue; }
+
+    totalTried++; window.totalTried = totalTried;
+    if(pack.goodness > best.goodness){
+      best = { goodness: pack.goodness, seed, snapshot: pack };
+      fillMarksAndRender(seed, pack);
+      sumRow.textContent = `Legjobb SEED: ${seed} | JÓSÁG: ${pack.goodness} | Próbálkozások: ${totalTried}`;
+    }
+
+    if(pack.stop){ break; }
+    await new Promise(r=>setTimeout(r,0));
+  }
+
+  stopVizTimer();
+  if(best.snapshot){
+    fillMarksAndRender(best.seed, best.snapshot);
+    sumRow.textContent = `Legjobb SEED: ${best.seed} | JÓSÁG: ${best.goodness} | Próbálkozások: ${totalTried}`;
+  }
+  setSearchingUI(false);
+}
+function stopSearch(){ stopRequested = true; }
+
+
+/* ===== STAT slideshow kiegészítés (minimális módosítás) ===== */
+window.statMode = false;
+
+function setStatToggleUI(){
+  const btn = document.getElementById("statToggle");
+  if(btn) btn.textContent = window.statMode ? "STAT KI" : "STAT BE";
+  const panel = document.getElementById("statPanel");
+  if(panel) panel.style.display = window.statMode ? "flex" : "none";
+}
+
+// Folyamatos hibátlan elrendezés generálás és megjelenítés 'none' stílus mellett
+async function runStatSlideshow(){
+  try{
+    stopRequested = false; totalTried = 0; window.totalTried = 0; const __st=document.getElementById("statStatus"); if(__st){__st.textContent="";__st.style.color="";}
+    setSearchingUI && setSearchingUI(true);
+    totalTried = 0; window.totalTried = 0; HIBATLAN = false;
+const limitEl = document.getElementById('attemptLimit');
+    const seedEl  = document.getElementById('seedInput');
+    let limit = 1000;
+    if(limitEl){ limit = Math.max(1, Math.min(1e7, (limitEl.value|0)||1000)); }
+    let seed = Math.floor(Math.random()*999999)+ELEVEN;
+
+    let shown = 0;
+    while(!stopRequested && window.statMode && shown < limit){
+      if(window.__statPaused){
+        await new Promise(r=>setTimeout(r,50));
+        continue;
+      }
+    
+      if(window.__statPaused){
+        await new Promise(r=>setTimeout(r,50));
+        continue;
+      }
+    
+      totalTried++; window.totalTried = totalTried;
+      if(totalTried % 100 === 0){ const __sum=document.getElementById("sumRow"); if(__sum){ __sum.textContent = `Próbálkozások: ${totalTried} | nMINTA: ${shown}`; } const __st=document.getElementById("statStatus"); if(__st){ __st.textContent="HIBÁS"; __st.style.color="#c33"; } }
+      totalTried++; window.totalTried = totalTried;
+      const pack = evaluateGoodness('none', seed);
+      if(pack && pack.ok){ const __sum=document.getElementById("sumRow"); if(__sum){ __sum.textContent = `Próbálkozások: ${totalTried} | nMINTA: ${shown+1}`; } const __st=document.getElementById("statStatus"); if(__st){ __st.textContent="HIBÁTLAN"; __st.style.color="#2a7"; }
+        HIBATLAN = true;
+        fillMarksAndRender(seed, pack);
+        shown++;
+        const sumEl=document.getElementById("sumRow"); if(sumEl){ sumEl.textContent = `Próbálkozások: ${totalTried} | nMINTA: ${shown}`; }
+        const st=document.getElementById("statStatus"); if(st){ st.textContent = "HIBÁTLAN"; }
+      }
+      else { HIBATLAN = false; const st=document.getElementById("statStatus"); if(st){ st.textContent = "HIBÁS"; } }
+      seed = (seed % 999999) + ELEVEN; // léptetjük a SEED-et 1..999999 között
+      // yield a böngészőnek
+      await new Promise(r=>setTimeout(r,0));
+    }
+    setSearchingUI && setSearchingUI(false);
+  }catch(err){
+    console.error('runStatSlideshow hiba:', err);
+  }
+}
+
+/* ===== UI események ===== */
+document.getElementById('runBtn').addEventListener('click', runSearch);
+document.getElementById('stopBtn').addEventListener('click', stopSearch);
+document.getElementById("statToggle").addEventListener("click", ()=>{
+  window.statMode = !window.statMode;
+  if(window.statMode && typeof window.resetSTAT==="function") window.resetSTAT();
+  if(window.statMode){ window.__statPaused=false; const p=document.getElementById("pauseResumeBtn"); if(p) p.textContent="SZÜNET"; }
+  setStatToggleUI();
+  if(typeof window.updateSaveBtnState==="function") window.updateSaveBtnState();
+});
+
+
+function applySeedFromInput(){
+  const inp = document.getElementById('seedInput');
+  const v = (inp.value|0);
+  const s = Math.max(1, Math.min(999999, v || ELEVEN));
+  const pack = evaluateGoodness('none', s);
+  if(pack.ok){
+    fillMarksAndRender(s, pack);
+    sumRow.textContent = `Legjobb SEED: ${s} | JÓSÁG: 0 | Próbálkozások: 1`;
+  }
+  inp.value=''; inp.focus();
+}
+
+// Új SEED
+document.getElementById('newSeed').addEventListener('click', ()=>{
+  const inp = document.getElementById('seedInput');
+  const s=Math.floor(Math.random()*999999)+ELEVEN;
+  inp.value=s;
+  const pack=evaluateGoodness('none', s);
+  if(pack.ok){
+    fillMarksAndRender(s, pack);
+    sumRow.textContent = `Legjobb SEED: ${s} | JÓSÁG: 0 | Próbálkozások: 1`;
+  }
+  inp.value=''; inp.focus();
+});
+
+
+// ENTER a SEED inputon: ugyanaz mint „SEED beállít”
+// ENTER a SEED inputon: alkalmazás
+const seedInputEl = document.getElementById('seedInput');
+seedInputEl.addEventListener('keydown', (ev)=>{
+  if(ev.key==='Enter'){
+    ev.preventDefault();
+    applySeedFromInput();
+  }
+});
+
+document.getElementById('toggleLabels').addEventListener('click', ()=>{
+  SHOW_LABELS=!SHOW_LABELS; svgLbl.style.display=SHOW_LABELS?'block':'none';
+});
+document.getElementById('saveSeed').addEventListener('click', ()=>{
+  const btn = document.getElementById('saveSeed');
+  const txt = btn.dataset.seedtxt || '';
+  const seed = btn.dataset.seed ? parseInt(btn.dataset.seed,10) 
+  : (parseInt(document.getElementById('seedInput').value,10)||ELEVEN);
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  
+document.getElementById('saveStatBtn')?.addEventListener('click', ()=>{
+  if(!window.__statPaused) return; // only active in SZÜNET
+  try{
+    const attempts = (document.getElementById('statAttempts')?.textContent || '').trim();
+    const samples  = (document.getElementById('statSamples')?.textContent  || '').trim();
+    const minV     = (document.getElementById('normMin')?.textContent     || '').trim();
+    const maxV     = (document.getElementById('normMax')?.textContent     || '').trim();
+    const matrixTxt= (document.getElementById('statMatrix')?.textContent  || '').trim();
+
+    const statMatrixLines = matrixTxt ? matrixTxt.split('\\n') : [];
+
+    let normLines = [];
+    let normIntLines = [];
+    try{
+      const res = (window.computeNormFromSTAT && window.computeNormFromSTAT()) || null;
+      if(res && res.norm){
+        const N = res.norm.length;
+        const fmt = (v)=> (isFinite(v) ? Number(v).toFixed(4) : '0.0000');
+        let maxLen = 1;
+        for(let r=0;r<N;r++){
+          for(let c=0;c<N;c++){
+            const s = fmt(res.norm[r][c]);
+            if(s.length>maxLen) maxLen = s.length;
+          }
+        }
+        const pad = (s)=> String(s).padStart(maxLen, ' ');
+        for(let r=0;r<N;r++){
+          const rowDec = [];
+          const rowInt = [];
+          for(let c=0;c<N;c++){
+            const t = res.norm[r][c];
+            rowDec.push(pad( fmt(t) ));
+            const g = Math.round((1 - t) * 255);
+            rowInt.push(String(g).padStart(3,' '));
+          }
+          normLines.push(rowDec.join(' '));
+          normIntLines.push(rowInt.join(' '));
+        }
+      }
+    }catch(_){}
+
+    // Timestamp
+    const d = new Date();
+    const pad2 = (n)=> String(n).padStart(2,'0');
+    const ts = d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()) + ' ' +
+               pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+
+    const lines = [];
+    lines.push('SMYOZ GENERATOR v4.5 (STAT)');
+    lines.push('Időbélyeg: ' + ts);
+    lines.push('Próbálkozások: ' + attempts);
+    lines.push('nMINTA: ' + samples);
+    lines.push('min: ' + minV);
+    lines.push('max: ' + maxV);
+    lines.push('');
+    lines.push('STAT MÁTRIX:');
+    if(statMatrixLines.length){ lines.push(...statMatrixLines); } else { lines.push('(nincs adat)'); }
+    lines.push('');
+    lines.push('normSTAT MÁTRIX (0..1, 4 tizedes):');
+    if(normLines.length){ lines.push(...normLines); } else { lines.push('(nincs adat)'); }
+    lines.push('');
+    lines.push('normSTAT MÁTRIX (0..255, egész):');
+    if(normIntLines.length){ lines.push(...normIntLines); } else { lines.push('(nincs adat)'); }
+
+    const txt = lines.join('\r\n');
+    const suggestedName = 'STAT_' + (samples || '0') + '.txt';
+
+    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=suggestedName; a.click();
+  }catch(err){
+    console.error('STAT mentés hiba:', err);
+    alert('STAT mentés sikertelen: ' + (err && err.message ? err.message : err));
+  }
+});
+const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`SEED-${seed}.txt`; a.click();
+});
+
+/* ===== Init ===== */
+// (Az első elrendezés üzenete eltávolítva a DOM-ból – itt hagyjuk kommentként)
+// Első elrendezés kirajzolása:
+buildGridDOM();
+setStatToggleUI();
+const initSeed = 11;
+const init = evaluateGoodness('none', initSeed);
+if(init.ok){
+  fillMarksAndRender(initSeed, init);
+  sumRow.textContent = `Legjobb SEED: ${initSeed} | JÓSÁG: 0 | Próbálkozások: 1`;
+}
+</script>
+
+<script>
+(function(){
+  function modeToChar(m){
+    return (m==='full-green' || m==='single-green') ? 'Z' : 'P';
+  }
+
+  const orig = window.drawLines;
+  if(typeof orig === 'function'){
+    window.drawLines = function(rowInfo, colInfo){
+      const ret = orig.apply(this, arguments);
+      try{
+        const rowVec = (rowInfo||[]).map(seg => modeToChar(seg.mode));
+        const colVec = (colInfo||[]).map(seg => modeToChar(seg.mode));
+        window.__rowVec = rowVec;
+        window.__colVec = colVec;
+
+        const seedPanel = document.getElementById('seedPanel');
+        if(seedPanel){
+          let rvEl = document.getElementById('smyoz-rowvec');
+          let cvEl = document.getElementById('smyoz-colvec');
+          if(!rvEl){
+            const div = document.createElement('div');
+            div.innerHTML = '<div>ROWVEC: <span id="smyoz-rowvec"></span></div><div>COLVEC: <span id="smyoz-colvec"></span></div>';
+            seedPanel.appendChild(div);
+            rvEl = document.getElementById('smyoz-rowvec');
+            cvEl = document.getElementById('smyoz-colvec');
+          }
+          rvEl.textContent = rowVec.join(' ');
+          cvEl.textContent = colVec.join(' ');
+        }
+      }catch(e){ console.error('vec capture error', e); }
+      return ret;
+    };
+  }else{
+    setTimeout(arguments.callee, 50);
+  }
+
+  const saveBtn = document.getElementById('saveSeed');
+  if(saveBtn){
+    saveBtn.addEventListener('click', function(){
+      setTimeout(()=>{
+        let txt = this.dataset.seedtxt || "";
+        if(window.__rowVec && window.__colVec){
+          if(!txt.endsWith("\\n")) txt += "\\n";
+          txt += "VONALAK:\\n";
+          txt += "SOROK:   "+window.__rowVec.join(" ")+"\\n";
+          txt += "OSZLOPOK: "+window.__colVec.join(" ")+"\\n";
+          this.dataset.seedtxt = txt;
+        }
+      },0);
+    });
+  }
+})();
+</script>
+
+
+
+<script>
+(function(){
+  if (window.__stat_inited) return;
+  window.__stat_inited = true;
+
+  const N = 9;
+  let STAT = Array.from({length:N}, () => Array(N).fill(0));
+  let NMINTA = 0;
+  window.__statPaused = false;
+  window.__statHue = false;
+
+  function resetSTAT(){
+    STAT = Array.from({length:N}, () => Array(N).fill(0));
+    NMINTA = 0;
+    const pre = document.getElementById('statMatrix'); if(pre) pre.textContent = '—';
+    const mi = document.getElementById('normMin'); if(mi) mi.textContent = '—';
+    const ma = document.getElementById('normMax'); if(ma) ma.textContent = '—';
+    const ns = document.getElementById('statSamples'); if(ns) ns.textContent = '0';
+    const cv = document.getElementById('normStatCanvas'); if(cv){ const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+  }
+  window.resetSTAT = resetSTAT;
+
+  function renderSTATMatrix(){
+    const pre = document.getElementById('statMatrix'); if(!pre) return;
+    let maxLen = 1;
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){ const len=String(STAT[r][c]).length; if(len>maxLen) maxLen=len; }
+    const W = Math.max(3, Math.min(7, maxLen));
+    const rows=[];
+    for(let r=0;r<N;r++){ rows.push(STAT[r].map(v=>String(v).padStart(W,' ')).join(' ')); }
+    pre.textContent = rows.join('\n');
+  }
+
+  function computeNormFromSTAT(){
+    let minV = Infinity, maxV = -Infinity;
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){ const v=STAT[r][c]; if(v<minV && v>0) minV=v; if(v>maxV) maxV=v; }
+    if(minV===Infinity) minV=0;
+    const range = Math.max(1, maxV - minV);
+    const norm = Array.from({length:N},()=>Array(N).fill(0));
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){ norm[r][c] = Math.max(0, Math.min(1, (STAT[r][c]-minV)/range)); }
+    return {norm, minV, maxV};
+  }
+  window.computeNormFromSTAT = computeNormFromSTAT;
+
+  function renderNormSTAT(){
+    const cv = document.getElementById('normStatCanvas'); if(!cv) return;
+    const ctx = cv.getContext('2d');
+    const {norm, minV, maxV} = computeNormFromSTAT();
+    const cw = Math.floor(cv.width / N), ch = Math.floor(cv.height / N);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const t = norm[r][c];
+      if(window.__statHue){
+        const H = Math.round((1 - t) * 240);
+        ctx.fillStyle = `hsl(${H}, 90%, 50%)`;
+      }else{
+        const g = Math.round((1 - t) * 255);
+        ctx.fillStyle = `rgb(${g},${g},${g})`;
+      }
+      ctx.fillRect(c*cw, r*ch, cw, ch);
+    }
+    const mi = document.getElementById('normMin'); if(mi) mi.textContent = String(minV);
+    const ma = document.getElementById('normMax'); if(ma) ma.textContent = String(maxV);
+  }
+
+  function accumulateFromState(state){ if(!state || !state.g) return; if(window.__statPaused) return;
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){ if(state.g[r][c]===1) STAT[r][c] += 1; }
+    NMINTA++;
+    const ns = document.getElementById('statSamples'); if(ns) ns.textContent = String(NMINTA);
+  }
+  window.accumulateFromState = accumulateFromState;
+
+  // Keep attempts number up to date
+  setInterval(()=>{
+    const a = document.getElementById('statAttempts');
+    const t = (window.totalTried!=null) ? window.totalTried : ((window.totalTriedCount!=null)?window.totalTriedCount:null);
+    if(a && t!=null) a.textContent = String(t);
+  }, 400);
+
+  // Hook fillMarksAndRender to update STAT live
+  const oldFill = window.fillMarksAndRender;
+  if(typeof oldFill === 'function'){
+    window.fillMarksAndRender = function(seed, pack){
+      const res = oldFill.apply(this, arguments);
+      try{
+        if(window.statMode && pack && pack.ok && !window.__statPaused){
+          accumulateFromState(pack.state);
+          renderSTATMatrix();
+          renderNormSTAT();
+        }
+      }catch(e){ console.error('[STAT] update error', e); }
+      return res;
+    };
+  }
+
+  // Panel buttons
+  document.addEventListener('click', (e)=>{
+    const id = e.target && e.target.id;
+    if(id==='pauseResumeBtn'){
+      window.__statPaused = !window.__statPaused;
+      e.target.textContent = window.__statPaused ? 'FOLYTATÁS' : 'SZÜNET';
+    }else if(id==='toggleColorMode'){
+      window.__statHue = !window.__statHue;
+      e.target.textContent = window.__statHue ? 'Szürke' : 'Színes/Hue';
+      renderNormSTAT();
+    }
+  });
+
+  // Ensure visibility synced on load
+  if(typeof setStatToggleUI === 'function') setStatToggleUI();
+
+})();
+</script>
+
+
+<script>
+(function(){
+  
+
+
+
+
+
+
+
+<script>
+(function(){
+  function updateSaveBtnState(){
+    const btn = document.getElementById('saveStatBtn');
+    if(!btn) return;
+    const on = !!window.__statPaused;
+    btn.disabled = !on;
+    btn.style.opacity = on ? '1' : '0.5';
+    btn.style.pointerEvents = on ? 'auto' : 'none';
+    btn.title = on ? 'Mentés: STAT_ nMINTA .txt' : 'SZÜNET módban aktív';
+  }
+
+  // Hook into pause button toggle and initial load
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id === 'pauseResumeBtn'){
+      // pause toggling happens elsewhere; just defer state update
+      setTimeout(updateSaveBtnState, 0);
+    }
+  });
+
+  // Also update when STAT BE/KI váltás történik
+  if (typeof setStatToggleUI === 'function'){
+    const _orig = setStatToggleUI;
+    window.setStatToggleUI = function(){
+      const r = _orig.apply(this, arguments);
+      updateSaveBtnState();
+      return r;
+    }
+  } else {
+    // initial call
+    document.addEventListener('DOMContentLoaded', updateSaveBtnState);
+  }
+
+  // Enforce paused-only save
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id === 'saveStatBtn'){
+      if(!window.__statPaused){
+        // ignore when not paused
+        return;
+      }
+    }
+  }, true);
+})();
+</script>
+
+
+<script>
+
+</script>
+
+
+<script>
+(function(){
+  window.updateSaveBtnState = function(){
+    const btn = document.getElementById('saveStatBtn');
+    if(!btn) return;
+    const paused = !!window.__statPaused;
+    btn.disabled = !paused;
+    btn.style.opacity = paused ? '1' : '0.5';
+    btn.style.pointerEvents = paused ? 'auto' : 'none';
+    const samples = (document.getElementById('statSamples')?.textContent||'').trim() || '0';
+    btn.title = paused ? ('Mentés STAT_' + samples + '.txt') : 'SZÜNET módban aktív';
+  };
+  // call once on load
+  window.addEventListener('load', window.updateSaveBtnState);
+})();
+</script>
+
+
+<script>
+window.addEventListener('load', ()=>{
+  const p = document.getElementById('pauseResumeBtn');
+  if(p){
+    p.addEventListener('click', ()=>{
+      setTimeout(()=>{ if(window.updateSaveBtnState) window.updateSaveBtnState(); }, 0);
+    });
+  }
+});
+</script>
+
+</body>
+
+<script>
+(function(){
+  if (window.__sm_stat_init) return;
+  window.__sm_stat_init = true;
+
+  const N = 9;
+  let STAT = Array.from({length:N}, () => Array(N).fill(0));
+  let NMINTA = 0;
+  let statMode = false;
+
+  function resetSTAT(){
+    STAT = Array.from({length:N}, () => Array(N).fill(0));
+    NMINTA = 0;
+    const pre = document.getElementById('statMatrix');
+    if (pre) pre.textContent = '—';
+    const mi = document.getElementById('normMin'); if (mi) mi.textContent = '—';
+    const ma = document.getElementById('normMax'); if (ma) ma.textContent = '—';
+    const cv = document.getElementById('normStatCanvas');
+    if (cv){ const ctx=cv.getContext('2d'); ctx.clearRect(0,0,cv.width,cv.height); }
+    const ns = document.getElementById('statSamples'); if (ns) ns.textContent = '0';
+  }
+
+  function renderSTATMatrix(){
+    const pre = document.getElementById('statMatrix');
+    if(!pre) return;
+    let maxLen = 1;
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const len = String(STAT[r][c]).length; if(len>maxLen) maxLen=len;
+    }
+    const W = Math.max(3, Math.min(6, maxLen));
+    const rows=[];
+    for(let r=0;r<N;r++){
+      const line = STAT[r].map(v => String(v).padStart(W,' ')).join(' ');
+      rows.push(line);
+    }
+    pre.textContent = rows.join('\n');
+  }
+
+  function computeNormFromSTAT(){
+    let minV = Infinity, maxV = -Infinity;
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const v = STAT[r][c];
+      if(v<minV && v>0 ) minV=v;   /* RA */
+      if(v>maxV) maxV=v;
+    }
+    let range = maxV - minV;
+    const norm = Array.from({length:N}, ()=>Array(N).fill(0));
+    if(range<=0){
+      return { norm, minV, maxV };
+    }
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const t = (STAT[r][c] - minV) / range;
+      norm[r][c] = Math.round(t * 255);
+    }
+    return { norm, minV, maxV };
+  }
+
+  function renderNormSTAT(){
+    const cv = document.getElementById('normStatCanvas');
+    if(!cv) return;
+    const ctx = cv.getContext('2d');
+    const { norm, minV, maxV } = computeNormFromSTAT();
+    const cellW = Math.floor(cv.width / N);
+    const cellH = Math.floor(cv.height / N);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        const g = norm[r][c];
+        ctx.fillStyle = `rgb(${g},${g},${g})`;
+        ctx.fillRect(c*cellW, r*cellH, cellW, cellH);
+      }
+    }
+    const mi = document.getElementById('normMin'); if (mi) mi.textContent = String(minV);
+    const ma = document.getElementById('normMax'); if (ma) ma.textContent = String(maxV);
+  }
+
+  function accumulateFromState(state){ if(!state || !state.g) return; if(window.__statPaused) return;
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        if(state.g[r][c]===1) STAT[r][c] += 1;
+      }
+    }
+    NMINTA++;
+    const ns = document.getElementById('statSamples'); if (ns) ns.textContent = String(NMINTA);
+  }
+
+  // Frissítjük a próbálkozás számlálót, ha a fő kódban elérhető
+  setInterval(()=>{
+    const a = document.getElementById('statAttempts');
+    if(a){
+      const t = (window.totalTried!=null) ? window.totalTried : ((window.totalTriedCount!=null)?window.totalTriedCount: null);
+      if (t!=null) a.textContent = String(t);
+    }
+  }, 500);
+
+  // Hook: fillMarksAndRender után, csak ha pack.ok
+  const oldF = window.fillMarksAndRender;
+  if (typeof oldF === 'function'){
+    window.fillMarksAndRender = function(seed, pack){
+      const res = oldF.apply(this, arguments);
+      if (statMode && pack && pack.ok){
+        accumulateFromState(pack.state);
+        renderSTATMatrix();
+        renderNormSTAT();
+      }
+      return res;
+    };
+  } else {
+    console.warn('[STAT] Nem találtam fillMarksAndRender függvényt – STAT hook nem aktív.');
+  }
+
+  // Lebegő STAT gomb
+  const btn = document.getElementById('statToggleFloating');
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      statMode = !statMode;
+      btn.textContent = statMode ? 'STAT KI' : 'STAT BE';
+      if(statMode) resetSTAT();
+    });
+  }
+})();
+</script>
+
+</html>

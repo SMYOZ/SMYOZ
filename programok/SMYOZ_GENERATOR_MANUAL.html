@@ -1,0 +1,2719 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<title>SMYOZ generátor GPT-5 — MANUAL</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg:#eef6ff;
+    --fg:#0b2b40;
+    --muted:#3b556b;
+    --card:#ffffff;
+    --accent:#1976d2;
+    --accent-dark:#1558a8;
+    --done-blue:#0047ff;
+    --done-blue-dark:#0033c7;
+    --done-green:#00e676;
+    --done-green-dark:#00c853;
+    --grid:#cfe9fb;
+    --ship:#123a66;
+    --water:#dff1ff;
+    --first:#b0b7c4;
+    --island:#0288d1;
+    --green:#00c853;
+    --red:#ff1744;
+        --selected:#ff9800;
+    --selected-dark:#ef6c00;
+    --ship-text:#ffffff;
+--shadow:0 8px 24px rgba(20,40,60,.08);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  header{
+    background:#375e97;
+    color:#fff;
+    padding:12px 10px;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:.3px;
+  }
+
+  /* felső infópanel */
+  .topwrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding:8px 0;
+  }
+  .infoRow{
+    display:flex;
+    gap:12px;
+    width:860px;
+    justify-content:space-between;
+  }
+  .ibox{
+    width:270px;
+    background:#ffffff;
+    border:1px solid #cfe1ff;
+    border-radius:8px;
+    box-shadow:var(--shadow);
+    padding:8px 10px;
+    text-align:center;
+  }
+  .ibox .cap{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:2px;
+  }
+  .ibox .val{
+    font-family:"Courier New",monospace;
+    font-weight:800;
+    font-size:14px;
+    min-height:1.2em;
+  }
+
+  /* felső gombsáv */
+  .toolbar{
+    background:#f9fbff;
+    border-top:2px solid #cfe1ff;
+    border-bottom:2px solid #cfe1ff;
+    box-shadow:var(--shadow);
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:40px;
+  }
+  .toolbar .group{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+
+  button{
+    border:0;
+    background:var(--accent);
+    color:#fff;
+    padding:7px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:13px;
+    white-space:nowrap;
+  }
+  button:hover{
+    background:var(--accent-dark);
+  }
+  button.dim{
+    opacity:.55;
+    pointer-events:none;
+  }
+
+  button.danger{ background:var(--red); }
+  button.danger:hover{ filter:brightness(0.95); }
+  @keyframes btnFlash{ 0%{ filter:brightness(1); } 50%{ filter:brightness(1.35); } 100%{ filter:brightness(1); } }
+  button.flash{ animation:btnFlash 140ms linear 1; }
+
+  /* fő elrendezés */
+  .main{
+    display:grid;
+    grid-template-columns: 320px 1fr;
+    gap:12px;
+    padding:12px;
+    justify-content:center;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    padding:12px;
+  }
+
+  h2{
+    margin:0 0 8px;
+  }
+
+  .mono{
+    font-family:"Courier New",monospace;
+    font-size:14px;
+  }
+
+  .hexa{
+    font-weight:800;
+    letter-spacing:0.5px;
+    padding:4px 0 0;
+  }
+
+  /* hiba-visszajelzés */
+  button.fail{
+    background:var(--red) !important;
+    box-shadow:0 0 0 6px rgba(244,67,54,0.85), 0 0 18px rgba(244,67,54,0.55);
+  }
+  @keyframes failBtnFlash{
+    0%{ box-shadow:0 0 0 0 rgba(244,67,54,0.0), 0 0 0 rgba(244,67,54,0.0); filter:brightness(1); }
+    10%{ box-shadow:0 0 0 7px rgba(244,67,54,0.95), 0 0 22px rgba(244,67,54,0.65); filter:brightness(1.25); }
+    70%{ box-shadow:0 0 0 7px rgba(244,67,54,0.95), 0 0 22px rgba(244,67,54,0.65); filter:brightness(1.15); }
+    100%{ box-shadow:0 0 0 0 rgba(244,67,54,0.0), 0 0 0 rgba(244,67,54,0.0); filter:brightness(1); }
+  }
+  button.failflash{ animation:failBtnFlash 2500ms ease-out 1; }
+
+  @keyframes ruleFlash{
+    0%{ outline:6px solid transparent; filter:brightness(1); }
+    10%{ outline:6px solid var(--red); filter:brightness(1.25); }
+    70%{ outline:6px solid var(--red); filter:brightness(1.15); }
+    100%{ outline:6px solid transparent; filter:brightness(1); }
+  }
+  .ruleflash{
+    animation:ruleFlash 2500ms ease-out 1;
+    border-radius:8px;
+  }
+
+  /* tartós (nem villogó) szabály-hibajelzés KÉSZ után */
+  .rule-item.ruleerror{
+    outline:6px solid var(--red);
+    border-radius:8px;
+    background:rgba(244,67,54,0.12);
+  }
+
+
+pre{
+    white-space:pre;
+    font-family:"Courier New",monospace;
+    font-size:13px;
+    line-height:1.25em;
+    background:#fafdff;
+    border:1px solid #cfe1ff;
+    border-radius:8px;
+    padding:8px;
+    overflow:auto;
+    max-height:220px;
+  }
+
+  /* tábla + gombpanel */
+  .board-card{
+    display:flex;
+    flex-direction:row;
+    flex-wrap:nowrap;
+    align-items:flex-start;
+    justify-content:flex-start;
+    /* legalább 10mm távolság az indexoszlop és a jobb oldali panelek között */
+    gap:10mm;
+  }
+
+  .frame{
+    position:relative;
+    width:600px;
+    height:600px;
+    background:var(--grid);
+    border:2px solid #123;
+    border-radius:8px;
+    overflow:hidden;
+  }
+  /* tábla körüli indexek (MANUAL): 10..90 fent/lent, 1..9 bal/jobb */
+  .frameStage{
+    position:relative;
+    /* a jobboldali indexoszlop és az alsó index-sor helye is legyen beleszámolva a dobozméretbe */
+    width: calc(600px + var(--idxPad));
+    height: calc(600px + var(--idxPad));
+    overflow:visible;
+    --cell: calc(600px / 9);
+    --idxPad: calc(var(--cell) * 0.45);
+
+    /* tábla+indexek együtt: 10mm BALRA, és az előzőhöz képest ~6mm-rel FELJEBB (nettó +4mm lefelé) */
+    margin: 0;
+    transform: translate(calc(var(--cell) * 0.33), calc(var(--cell) * 0.28));
+  }
+  .frameStage .frame{
+    position:absolute;
+    left:0;
+    top:0;
+  }
+  .idxRow, .idxCol{
+    position:absolute;
+    display:grid;
+    z-index:6;
+    pointer-events:none;
+    user-select:none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight:900;
+    font-size: calc(var(--cell) * 0.33);
+    color: var(--fg);
+    opacity:0.95;
+  }
+  .idxRow{
+    left:0;
+    width:600px;
+    height: var(--idxPad);
+    grid-template-columns: repeat(9, var(--cell));
+    align-items:center;
+    justify-items:center;
+  }
+  .idxTop{ top: calc(-1 * var(--idxPad)); }
+  .idxBottom{ top: 600px; }
+
+  .idxCol{
+    top:0;
+    width: var(--idxPad);
+    height:600px;
+    grid-template-rows: repeat(9, var(--cell));
+    align-items:center;
+    justify-items:center;
+  }
+  .idxLeft{ left: calc(-1 * var(--idxPad)); }
+  .idxRight{ left: 600px; }
+
+
+  #grid{
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    grid-auto-rows:1fr;
+    width:100%;
+    height:100%;
+  }
+
+  .cell{
+    border:1px solid rgba(0,0,0,0.08);
+    background:var(--water);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+  }
+  .cell.ship{
+    background:var(--ship);
+  }
+  .cell.first-end{
+    background:var(--first);
+  }
+
+.cell.end{
+    color:var(--ship-text);
+    font-weight:900;
+    font-size:12px;
+    text-shadow:0 1px 0 rgba(0,0,0,0.25);
+  }
+  .cell.ship{ outline:2px solid rgba(18,58,102,0.35); outline-offset:-2px; }
+  .cell.first-end{ outline:3px solid rgba(255,152,0,0.55); outline-offset:-3px; }
+
+  svg#islands,
+  svg#lines,
+  svg#labels{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  svg#islands{ z-index:2; }
+  svg#lines{   z-index:3; }
+  svg#labels{  z-index:5; }
+
+  .manual-panel{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding-top:26px; /* lejjebb */
+    flex:0 0 auto;
+  }
+
+  .manual-lower{
+    margin-top:calc(22px - 8mm); /* feljebb: howto + TELJES TÖRLÉS + alatta minden */
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .howto{
+    width:220px;
+    background:#f4f8ff;
+    border:1px dashed #cfe1ff;
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:12px;
+    color:#14324a;
+    line-height:1.25em;
+  }
+
+  .howto-key{
+    font-weight:800;
+    font-size:13.5px;
+    color:#1b3650;
+  }
+
+  .howto-line{ display:block; }
+
+  .howto-line-del{
+    margin-top:0.625em; /* fél sormagasság a .howto line-height (1.25em) alapján */
+  }
+  .howto b{ color:#1b3650; }
+
+  .ships-title{
+    font-weight:800;
+    font-size:16px;
+    margin:0 0 -6px 0;
+    color:#1b3650;
+  }
+  .manual-row{
+    display:flex;
+    gap:10px;
+  }
+
+  .rules-panel{
+    margin-top:14px;
+    padding:10px 12px;
+    border:1px solid #cfe1ff;
+    border-radius:10px;
+    background:#f9fbff;
+    width:220px;
+  }
+  .rules-title{
+    font-weight:800;
+    font-size:13.5px;
+    margin-bottom:8px;
+    color:#1b3650;
+  }
+  .rule-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:#14324a;
+    margin:4px 0;
+    user-select:none;
+  }
+  .rule-item input{
+    transform:translateY(1px);
+  }
+  .rule-note{
+    margin-top:6px;
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.2em;
+  }
+
+  .ship-btn{
+    min-width:56px;
+    text-align:center;
+  }
+  .ship-btn.selected{
+    background:var(--selected-dark);
+    color:#fff;
+    box-shadow:0 0 0 3px rgba(255,152,0,0.35);
+  }
+  .ship-btn.done{
+    background:var(--green);
+    color:#fff;
+    box-shadow:0 0 0 3px rgba(0,200,83,0.25);
+  }
+
+  #btnDone{
+    min-width:86px;
+    font-weight:900;
+    letter-spacing:0.6px;
+    background:var(--done-blue);
+    border:2px solid rgba(255,255,255,0.92);
+    box-shadow:0 0 0 3px rgba(11,43,64,0.22), 0 10px 22px rgba(20,40,60,.18);
+  }
+  #btnDone:hover{
+    background:var(--done-blue-dark);
+  }
+  #btnDone.ok{
+    background:var(--done-green);
+  }
+  #btnDone.ok:hover{
+    background:var(--done-green-dark);
+  }
+  #btnDone.error{
+    background:var(--red);
+  }
+  #btnDone.error:hover{
+    filter:brightness(0.95);
+  }
+
+  .footnote{
+    margin-top:6px;
+    color:#3b556b;
+    font-size:12px;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<header>SMYOZ generátor GPT-5 — MANUAL</header>
+
+<!-- felső infópanel -->
+<div class="topwrap">
+  <div class="infoRow">
+    <div class="ibox">
+      <div class="cap">Vízvonalak száma</div>
+      <div class="val" id="vvBox">—</div>
+    </div>
+    <div class="ibox">
+      <div class="cap">Szigetek (méretek növekvő sorrendben)</div>
+      <div class="val" id="szigBox">—</div>
+    </div>
+    <div class="ibox">
+      <div class="cap">Kikötések száma</div>
+      <div class="val" id="khBox">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- felső gombsáv -->
+<div class="toolbar">
+  <div class="group">
+    <!-- üres helyfoglaló -->
+  </div>
+  <div class="group">
+    <button id="toggleLabels">Jelek be/ki</button>
+    <button id="saveSeed">SEEDMAN.txt mentés</button>
+    <button id="loadSeed">SEEDMAN betöltés</button>
+    <input id="loadFile" type="file" accept=".txt,text/plain" style="display:none" />
+  </div>
+</div>
+
+<!-- fő tartalom -->
+<div class="main">
+  <!-- BAL: SEED adatok -->
+  <div class="card">
+    <h2>SEED adatok</h2>
+    <div class="mono">SEED: <span id="seedDisp">0</span></div>
+    <div class="mono">nVV: <span id="vvDisp">—</span></div>
+    <div class="mono">lSZ: <span id="szDisp">—</span></div>
+    <div class="mono">nKH: <span id="khDisp">—</span></div>
+
+    <div style="margin-top:8px"><b>HAJÓK (rendezett lOPZ):</b></div>
+    <pre id="opzPre">—</pre>
+
+    <div><b>MATRIX:</b></div>
+    <pre id="matrixPre">—</pre>
+
+    <div><b>PONTOK:</b></div>
+    <pre id="pointsPre">—</pre>
+
+    <div style="margin-top:8px"><b>HEXA:</b></div>
+    <div id="hexaDisp" class="mono hexa">—</div>
+  </div>
+
+  <!-- JOBB: tábla + manuális gombok -->
+  <div class="card board-card">
+    <div class="frameStage">
+      <div class="idxRow idxTop">
+        <span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span>
+      </div>
+      <div class="idxRow idxBottom">
+        <span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span>
+      </div>
+      <div class="idxCol idxLeft">
+        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+      </div>
+      <div class="idxCol idxRight">
+        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+      </div>
+
+      <div class="frame">
+        <div id="grid"></div>
+        <svg id="islands"></svg>
+        <svg id="lines"></svg>
+        <svg id="labels" viewBox="0 0 9 9"></svg>
+      </div>
+    </div>
+
+    <div class="manual-panel">
+      <div class="ships-title">HAJÓK</div>
+      <div class="manual-row">
+        <button class="ship-btn" id="btnAL">AL</button>
+      </div>
+      <div class="manual-row">
+        <button class="ship-btn" id="btnBE1">BE1</button>
+        <button class="ship-btn" id="btnBE2">BE2</button>
+      </div>
+      <div class="manual-row">
+        <button class="ship-btn" id="btnGA1">GA1</button>
+        <button class="ship-btn" id="btnGA2">GA2</button>
+        <button class="ship-btn" id="btnGA3">GA3</button>
+      </div>
+      <div class="manual-row">
+        <button class="ship-btn" id="btnDE1">DE1</button>
+        <button class="ship-btn" id="btnDE2">DE2</button>
+        <button class="ship-btn" id="btnDE3">DE3</button>
+        <button class="ship-btn" id="btnDE4">DE4</button>
+      </div>
+      <div class="manual-row">
+        <button id="btnDone">KÉSZ</button>
+      </div>
+      <div class="manual-lower">
+        <div class="howto">
+          <div class="howto-line"><span class="howto-key">ELHELYEZÉS:</span> (gombon és) a végeken kattintva</div>
+          <div class="howto-line howto-line-del"><span class="howto-key">TÖRLÉS:</span> gombon vagy hajón kattintva</div>
+        </div>
+        <div class="manual-row">
+          <button id="btnFullClear" class="danger">TELJES TÖRLÉS</button>
+        </div>
+
+        <div class="rules-panel">
+        <div class="rules-title">Ellenőrzések (ki/be)</div>
+        <label class="rule-item"><input type="checkbox" id="ruleTouch" checked /> Érintés tiltás</label>
+        <label class="rule-item"><input type="checkbox" id="ruleDocking" checked /> Kikötés szabály</label>
+        <label class="rule-item"><input type="checkbox" id="ruleApex" checked /> Csúcs szabály</label>
+        <label class="rule-item"><input type="checkbox" id="ruleCenter" checked /> Centrum szabály</label>
+        <label class="rule-item"><input type="checkbox" id="ruleSide" checked /> Oldal szabály</label>
+        
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const N = 9;
+
+  // hajó-szabály: 1x AL (4), 2x BE (3), 3x GA (2), 4x DE (1)
+  const SHIP_SPECS = [
+    { key:"AL", size:4, count:1 },
+    { key:"BE", size:3, count:2 },
+    { key:"GA", size:2, count:3 },
+    { key:"DE", size:1, count:4 }
+  ];
+
+  const gridEl   = document.getElementById("grid");
+  const svgIsl   = document.getElementById("islands");
+  const svgLin   = document.getElementById("lines");
+  const svgLbl   = document.getElementById("labels");
+
+  const seedDisp = document.getElementById("seedDisp");
+  const vvDisp   = document.getElementById("vvDisp");
+  const szDisp   = document.getElementById("szDisp");
+  const khDisp   = document.getElementById("khDisp");
+
+  const vvBox    = document.getElementById("vvBox");
+  const szigBox  = document.getElementById("szigBox");
+  const khBox    = document.getElementById("khBox");
+
+  const opzPre     = document.getElementById("opzPre");
+  const matrixPre  = document.getElementById("matrixPre");
+  const pointsPre  = document.getElementById("pointsPre");
+  const hexaDisp   = document.getElementById("hexaDisp");
+
+  const toggleLabelsBtn = document.getElementById("toggleLabels");
+  const saveSeedBtn     = document.getElementById("saveSeed");
+  const loadSeedBtn     = document.getElementById("loadSeed");
+  const loadFileInput   = document.getElementById("loadFile");
+  const doneBtn         = document.getElementById("btnDone");
+  const fullClearBtn    = document.getElementById("btnFullClear");
+
+  const ruleTouchCb   = document.getElementById("ruleTouch");
+  const ruleDockingCb = document.getElementById("ruleDocking");
+  const ruleApexCb    = document.getElementById("ruleApex");
+  const ruleCenterCb  = document.getElementById("ruleCenter");
+  const ruleSideCb    = document.getElementById("ruleSide");
+
+  let OVERLAY_MODE = 0; // 0=KI, 1=Vonalak+szigetek, 2=Feliratok is
+  let derivedUnlockedManual = false;
+  let derivedAvailable = false;
+  let seedUnlocked = false;
+  let lastAllPlaced = false;
+  let overlayUserChoice = false; // ha a felhasználó állította a Jelek módot, ne írjuk felül automatikusan
+
+  // elhelyezési ellenőrzések kapcsolói (mind alapértelmezetten BE)
+  const RULES = {
+    touch: true,
+    docking: true,
+    apex: true,
+    center: true,
+    side: true
+  };
+
+
+  // állapot: g = 0/1 tábla, ships = már lerakott hajók
+  const state = {
+    g: Array.from({length:N}, () => Array(N).fill(0)),
+    ships: []
+  };
+
+  // cella DOM-táblázat
+  const cells = [];
+
+  // hajó-szlotok: 1:1 a gombokkal
+  const shipSlots = [
+    { id:"btnAL",  name:"AL", size:4 },
+    { id:"btnBE1", name:"BE", size:3 },
+    { id:"btnBE2", name:"BE", size:3 },
+    { id:"btnGA1", name:"GA", size:2 },
+    { id:"btnGA2", name:"GA", size:2 },
+    { id:"btnGA3", name:"GA", size:2 },
+    { id:"btnDE1", name:"DE", size:1 },
+    { id:"btnDE2", name:"DE", size:1 },
+    { id:"btnDE3", name:"DE", size:1 },
+    { id:"btnDE4", name:"DE", size:1 }
+  ];
+
+  // az éppen kiválasztott hajóslot (gomb) – opcionális
+  let selectedSlot;
+  // kétkattintásos elhelyezés első pontja
+  let firstCell;
+  let firstCellAt = 0;
+
+  const DE_SECOND_CLICK_MS = 12000;
+  const FAIL_FLASH_MS = 2500;
+  const RULE_FLASH_MS = 2500;
+
+  /* ===== segéd függvények a táblához ===== */
+
+  function inBounds(r,c){ return r>=0 && r<N && c>=0 && c<N; }
+  function isCornerCell(r,c){
+    return (r===0 || r===N-1) && (c===0 || c===N-1);
+  }
+
+  // orient: 0 = vízszintes, 1 = függőleges
+  function shipCells(r,c,size,orient){
+    const out = [];
+    for(let k=0;k<size;k++){
+      const rr = r + (orient ? k : 0);
+      const cc = c + (orient ? 0 : k);
+      out.push([rr,cc]);
+    }
+    return out;
+  }
+
+  function getMetrics(){
+    const rect = gridEl.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    const cw = w / N;
+    const ch = h / N;
+    return { w,h,cw,ch };
+  }
+
+  /* ===== 5 szabály: ugyanaz, mint a generátorban ===== */
+
+  function cellsSet(cellsArr){
+    const s = new Set();
+    for(const pair of cellsArr){
+      s.add(pair[0] + "," + pair[1]);
+    }
+    return s;
+  }
+
+  function noTouch(boardG, cellsArr){
+    const own = cellsSet(cellsArr);
+    for(const pair of cellsArr){
+      const r = pair[0];
+      const c = pair[1];
+      if(boardG[r][c]===1) return false; // átfedés is érintés
+      for(let dr=-1; dr<=1; dr++){
+        for(let dc=-1; dc<=1; dc++){
+          const rr = r + dr;
+          const cc = c + dc;
+          if(!inBounds(rr,cc)) continue;
+          if(boardG[rr][cc]===1 && !own.has(rr + "," + cc)) return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+  // noTouch variáns elhelyezett hajókhoz: a saját cellák "1"-je nem számít érintésnek,
+  // csak másik hajó közelsége (8-szomszédság) tiltott.
+  function noTouchIgnoreSelf(boardG, cellsArr){
+    const own = cellsSet(cellsArr);
+    for(const pair of cellsArr){
+      const r = pair[0];
+      const c = pair[1];
+      for(let dr=-1; dr<=1; dr++){
+        for(let dc=-1; dc<=1; dc++){
+          const rr = r + dr;
+          const cc = c + dc;
+          if(!inBounds(rr,cc)) continue;
+          if(boardG[rr][cc]===1 && !own.has(rr + "," + cc)) return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function dockingRuleOK(cellsArr){
+    for(const pair of cellsArr){
+      if(isCornerCell(pair[0], pair[1])) return false;
+    }
+    const along = [];
+    for(const pair of cellsArr){
+      const r = pair[0];
+      const c = pair[1];
+      if(r===0 || r===N-1 || c===0 || c===N-1){
+        along.push(pair);
+      }
+    }
+    if(along.length===0) return true;
+    if(along.length>1) return false;
+    const first = cellsArr[0];
+    const last  = cellsArr[cellsArr.length-1];
+    const t = along[0];
+    const matchFirst = (t[0]===first[0] && t[1]===first[1]);
+    const matchLast  = (t[0]===last[0]  && t[1]===last[1]);
+    return matchFirst || matchLast;
+  }
+
+  function apexRuleOK(newCells, ships, boardG){
+    // szabály: egymással szemben álló hajóvégek (DE minden oldala) nem lehetnek
+    // egyetlen vízmezővel elválasztva (vég - víz - vég).
+    function tipsForShipCells(cells){
+      if(cells.length===1){
+        return [{ pos: cells[0], tips: [[0,1],[0,-1],[1,0],[-1,0]] }];
+      }
+      const first = cells[0];
+      const last  = cells[cells.length-1];
+
+      function tipForEnd(endPos){
+        for(const p of cells){
+          if(p===endPos) continue;
+          const dr = endPos[0] - p[0];
+          const dc = endPos[1] - p[1];
+          if(Math.abs(dr)+Math.abs(dc)===1){
+            return [[dr,dc]];
+          }
+        }
+        // biztonsági fallback
+        return [[0,1],[0,-1],[1,0],[-1,0]];
+      }
+
+      return [
+        { pos:first, tips: tipForEnd(first) },
+        { pos:last,  tips: tipForEnd(last)  }
+      ];
+    }
+
+    // existing endpoints map: "r,c" -> Set("dr,dc")
+    const endMap = {};
+    for(const s of ships){
+      const ends = tipsForShipCells(s.cells);
+      for(const e of ends){
+        const k = e.pos[0] + "," + e.pos[1];
+        if(!endMap[k]) endMap[k] = new Set();
+        for(const t of e.tips){
+          endMap[k].add(t[0] + "," + t[1]);
+        }
+      }
+    }
+
+    const newEnds = tipsForShipCells(newCells);
+
+    for(const e of newEnds){
+      const r = e.pos[0];
+      const c = e.pos[1];
+      for(const t of e.tips){
+        const dr = t[0];
+        const dc = t[1];
+        const midR = r + dr;
+        const midC = c + dc;
+        const othR = r + 2*dr;
+        const othC = c + 2*dc;
+        if(!inBounds(othR,othC) || !inBounds(midR,midC)) continue;
+
+        // csak akkor releváns, ha középen tényleg víz/üres mező van
+        if(boardG[midR][midC]===1) continue;
+
+        const k2 = othR + "," + othC;
+        const tips2 = endMap[k2];
+        if(!tips2) continue;
+
+        const opp = (-dr) + "," + (-dc);
+        if(tips2.has(opp)){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function centerTimes2(cellsArr){
+    const rs = [];
+    const cs = [];
+    for(const pair of cellsArr){
+      rs.push(pair[0]);
+      cs.push(pair[1]);
+    }
+    const rmin = Math.min.apply(null, rs);
+    const rmax = Math.max.apply(null, rs);
+    const cmin = Math.min.apply(null, cs);
+    const cmax = Math.max.apply(null, cs);
+    return { r2: rmin+rmax, c2: cmin+cmax };
+  }
+
+  function centerRuleOK(cellsArr, name, ships){
+    const nc = centerTimes2(cellsArr);
+    for(const s of ships){
+      if(s.name!==name) continue;
+      const sc = centerTimes2(s.cells);
+      if(sc.r2===nc.r2 || sc.c2===nc.c2) return false;
+    }
+    return true;
+  }
+
+  function sideRuleOK(newCells, ships){
+    const nRs = [];
+    const nCs = [];
+    for(const pair of newCells){
+      nRs.push(pair[0]);
+      nCs.push(pair[1]);
+    }
+    const nRmin = Math.min.apply(null, nRs);
+    const nRmax = Math.max.apply(null, nRs);
+    const nCmin = Math.min.apply(null, nCs);
+    const nCmax = Math.max.apply(null, nCs);
+    const nOrient = (nRmin===nRmax) ? "H" : "V";
+
+    for(const s of ships){
+      const cs = s.cells;
+      const aRs = [];
+      const aCs = [];
+      for(const pair of cs){
+        aRs.push(pair[0]);
+        aCs.push(pair[1]);
+      }
+      const aRmin = Math.min.apply(null, aRs);
+      const aRmax = Math.max.apply(null, aRs);
+      const aCmin = Math.min.apply(null, aCs);
+      const aCmax = Math.max.apply(null, aCs);
+      const aOrient = (aRmin===aRmax) ? "H" : "V";
+      if(aOrient!==nOrient) continue;
+
+      if(nOrient==="H"){
+        const overlap = Math.max(
+          0,
+          Math.min(nCmax,aCmax) - Math.max(nCmin,aCmin) + 1
+        );
+        if(overlap>=2){
+          const gap = Math.abs(nRmin-aRmin) - 1;
+          if(gap<2) return false;
+        }
+      }else{
+        const overlap = Math.max(
+          0,
+          Math.min(nRmax,aRmax) - Math.max(nRmin,aRmin) + 1
+        );
+        if(overlap>=2){
+          const gap = Math.abs(nCmin-aCmin) - 1;
+          if(gap<2) return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function canPlaceShip(board, r, c, size, orient, name){
+    return checkPlacement(board,r,c,size,orient,name).ok;
+  }
+
+  /* ===== sor / oszlop vonalak ===== */
+
+  function computeRowInfo(board){
+    const info = [];
+    for(let r=0; r<N; r++){
+      const list = [];
+      for(const s of board.ships){
+        const cols = [];
+        for(const pair of s.cells){
+          if(pair[0]===r) cols.push(pair[1]);
+        }
+        if(cols.length>0){
+          const cmin = Math.min.apply(null, cols);
+          const cmax = Math.max.apply(null, cols);
+          list.push({ ship:s, cmin:cmin, cmax:cmax });
+        }
+      }
+      if(list.length===0){
+        info.push({ mode:"full-green", r:r });
+      }else if(list.length===1){
+        const item = list[0];
+        info.push({
+          mode:"single-green",
+          r:r,
+          ship:item.ship,
+          cmin:item.cmin,
+          cmax:item.cmax
+        });
+      }else{
+        let left = list[0];
+        let right = list[0];
+        for(const it of list){
+          if(it.cmin<left.cmin) left = it;
+          if(it.cmax>right.cmax) right = it;
+        }
+        info.push({
+          mode:"red-between",
+          r:r,
+          leftEnd:left.cmax,
+          rightStart:right.cmin,
+          list:list
+        });
+      }
+    }
+    return info;
+  }
+
+  function computeColInfo(board){
+    const info = [];
+    for(let c=0; c<N; c++){
+      const list = [];
+      for(const s of board.ships){
+        const rows = [];
+        for(const pair of s.cells){
+          if(pair[1]===c) rows.push(pair[0]);
+        }
+        if(rows.length>0){
+          const rmin = Math.min.apply(null, rows);
+          const rmax = Math.max.apply(null, rows);
+          list.push({ ship:s, rmin:rmin, rmax:rmax });
+        }
+      }
+      if(list.length===0){
+        info.push({ mode:"full-green", c:c });
+      }else if(list.length===1){
+        const item = list[0];
+        info.push({
+          mode:"single-green",
+          c:c,
+          ship:item.ship,
+          rmin:item.rmin,
+          rmax:item.rmax
+        });
+      }else{
+        let top = list[0];
+        let bottom = list[0];
+        for(const it of list){
+          if(it.rmin<top.rmin) top = it;
+          if(it.rmax>bottom.rmax) bottom = it;
+        }
+        info.push({
+          mode:"red-between",
+          c:c,
+          topEnd:top.rmax,
+          bottomStart:bottom.rmin,
+          list:list
+        });
+      }
+    }
+    return info;
+  }
+
+  function drawLines(rowInfo, colInfo){
+    const m = getMetrics();
+    const w = m.w;
+    const h = m.h;
+    const cw = m.cw;
+    const ch = m.ch;
+
+    svgLin.innerHTML = "";
+    svgLin.setAttribute("viewBox","0 0 " + w + " " + h);
+
+    function addLine(x1,y1,x2,y2,color,thick){
+      const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+      l.setAttribute("x1", x1);
+      l.setAttribute("y1", y1);
+      l.setAttribute("x2", x2);
+      l.setAttribute("y2", y2);
+      l.setAttribute("stroke", color);
+      l.setAttribute("stroke-width", thick);
+      l.setAttribute("stroke-linecap","round");
+      svgLin.appendChild(l);
+    }
+
+    // finom rács
+    for(let i=0;i<=N;i++){
+      const x = i*cw;
+      const y = i*ch;
+      const v = document.createElementNS("http://www.w3.org/2000/svg","line");
+      v.setAttribute("x1", x);
+      v.setAttribute("y1", 0);
+      v.setAttribute("x2", x);
+      v.setAttribute("y2", h);
+      v.setAttribute("stroke","rgba(0,0,0,0.06)");
+      v.setAttribute("stroke-width","1");
+      svgLin.appendChild(v);
+
+      const q = document.createElementNS("http://www.w3.org/2000/svg","line");
+      q.setAttribute("x1", 0);
+      q.setAttribute("y1", y);
+      q.setAttribute("x2", w);
+      q.setAttribute("y2", y);
+      q.setAttribute("stroke","rgba(0,0,0,0.06)");
+      q.setAttribute("stroke-width","1");
+      svgLin.appendChild(q);
+    }
+
+    // sorok
+    for(const seg of rowInfo){
+      const y = seg.r * ch + ch/2;
+      if(seg.mode==="full-green"){
+        addLine(0,y,w,y,"var(--green)",5);
+      }else if(seg.mode==="single-green"){
+        const x1 = seg.cmin*cw;
+        const x2 = (seg.cmax+1)*cw;
+        addLine(x1,y,x2,y,"var(--green)",5);
+      }else if(seg.mode==="red-between"){
+        const start = (seg.leftEnd+1)*cw;
+        const end   = seg.rightStart*cw;
+        if(end>start){
+          addLine(start,y,end,y,"var(--red)",5);
+        }
+      }
+    }
+
+    // oszlopok
+    for(const seg of colInfo){
+      const x = seg.c * cw + cw/2;
+      if(seg.mode==="full-green"){
+        addLine(x,0,x,h,"var(--green)",5);
+      }else if(seg.mode==="single-green"){
+        const y1 = seg.rmin*ch;
+        const y2 = (seg.rmax+1)*ch;
+        addLine(x,y1,x,y2,"var(--green)",5);
+      }else if(seg.mode==="red-between"){
+        const start = (seg.topEnd+1)*ch;
+        const end   = seg.bottomStart*ch;
+        if(end>start){
+          addLine(x,start,x,end,"var(--red)",5);
+        }
+      }
+    }
+  }
+
+  /* ===== vízpontok + szigetek ===== */
+
+  function computeWaterPoints(board){
+    const pts = new Map();
+    for(let r0=1;r0<=N-1;r0++){
+      for(let c0=1;c0<=N-1;c0++){
+        const adj = [
+          [r0-1,c0-1],[r0-1,c0],
+          [r0,c0-1],[r0,c0]
+        ];
+        let covered = false;
+        for(const pair of adj){
+          const rr = pair[0];
+          const cc = pair[1];
+          if(board.g[rr][cc]===1){
+            covered = true;
+            break;
+          }
+        }
+        if(!covered){
+          const key = r0 + "," + c0;
+          pts.set(key,{ r:r0, c:c0 });
+        }
+      }
+    }
+    return pts;
+  }
+
+  function bfsIslands(pts){
+    const seen = new Set();
+    const sizes = [];
+
+    function key(r,c){
+      return r + "," + c;
+    }
+
+    for(const entry of pts){
+      const k = entry[0];
+      const p = entry[1];
+      if(seen.has(k)) continue;
+
+      const q = [];
+      q.push(p);
+      let idx = 0;
+      seen.add(k);
+      let size = 0;
+
+      while(idx<q.length){
+        const cur = q[idx];
+        idx++;
+        size++;
+        const r = cur.r;
+        const c = cur.c;
+        const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+        for(const d of dirs){
+          const nr = r + d[0];
+          const nc = c + d[1];
+          const nk = key(nr,nc);
+          if(pts.has(nk) && !seen.has(nk)){
+            seen.add(nk);
+            q.push(pts.get(nk));
+          }
+        }
+      }
+      sizes.push(size);
+    }
+
+    sizes.sort(function(a,b){ return a-b; });
+    return sizes;
+  }
+
+  function drawIslands(pts){
+    const m = getMetrics();
+    const w = m.w;
+    const h = m.h;
+    const cw = m.cw;
+    const ch = m.ch;
+
+    svgIsl.innerHTML = "";
+    svgIsl.setAttribute("viewBox","0 0 " + w + " " + h);
+
+    const base = Math.min(cw,ch);
+    const r = Math.max(3, base*0.08);
+    const stroke = Math.max(2, base*0.06);
+
+    const added = new Set();
+
+    for(const entry of pts){
+      const key = entry[0];
+      const p = entry[1];
+      const cx = p.c * cw;
+      const cy = p.r * ch;
+
+      const neighbours = [
+        [p.r+1,p.c],
+        [p.r,p.c+1]
+      ];
+      for(const nb of neighbours){
+        const nr = nb[0];
+        const nc = nb[1];
+        const nk = nr + "," + nc;
+        if(pts.has(nk)){
+          const nx = nc * cw;
+          const ny = nr * ch;
+          const ek = key<nk ? key + "|" + nk : nk + "|" + key;
+          if(!added.has(ek)){
+            const l = document.createElementNS("http://www.w3.org/2000/svg","line");
+            l.setAttribute("x1",cx);
+            l.setAttribute("y1",cy);
+            l.setAttribute("x2",nx);
+            l.setAttribute("y2",ny);
+            l.setAttribute("stroke","var(--island)");
+            l.setAttribute("stroke-width",stroke);
+            l.setAttribute("stroke-linecap","round");
+            svgIsl.appendChild(l);
+            added.add(ek);
+          }
+        }
+      }
+    }
+
+    for(const entry of pts){
+      const p = entry[1];
+      const cx = p.c * cw;
+      const cy = p.r * ch;
+      const circ = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      circ.setAttribute("cx",cx);
+      circ.setAttribute("cy",cy);
+      circ.setAttribute("r",r);
+      circ.setAttribute("fill","var(--island)");
+      svgIsl.appendChild(circ);
+    }
+  }
+
+  /* ===== jelrács + feliratok ===== */
+
+  function buildMarksGrid(){
+    const m = [];
+    for(let r=0;r<N;r++){
+      const row = [];
+      for(let c=0;c<N;c++){
+        row.push("");
+      }
+      m.push(row);
+    }
+    return m;
+  }
+
+  function addMark(marks, r, c, ch){
+    const cur = marks[r][c];
+    if(cur===""){
+      marks[r][c] = ch;
+      return;
+    }
+    const s = new Set();
+    const chars = cur.split("");
+    for(const k of chars) s.add(k);
+    const newChars = ch.split("");
+    for(const k of newChars) s.add(k);
+    const arr = Array.from(s).sort();
+    const joined = arr.join("");
+    if(joined==="p" && cur==="p"){
+      marks[r][c] = "pp";
+    }else if(joined==="z" && cur==="z"){
+      marks[r][c] = "zz";
+    }else if(joined==="pz"){
+      marks[r][c] = "pz";
+    }else{
+      marks[r][c] = joined;
+    }
+  }
+
+  function fillMarksGrid(marks, rowInfo, colInfo, board){
+    for(const seg of rowInfo){
+      const r = seg.r;
+      if(seg.mode==="full-green"){
+        for(let c=0;c<N;c++){
+          addMark(marks,r,c,"z");
+        }
+      }else if(seg.mode==="single-green"){
+        for(let c=seg.cmin;c<=seg.cmax;c++){
+          addMark(marks,r,c,"z");
+        }
+      }else if(seg.mode==="red-between"){
+        const L = seg.leftEnd+1;
+        const R = seg.rightStart-1;
+        if(L<=R){
+          for(let c=L;c<=R;c++){
+            addMark(marks,r,c,"p");
+          }
+        }
+      }
+    }
+
+    for(const seg of colInfo){
+      const c = seg.c;
+      if(seg.mode==="full-green"){
+        for(let r=0;r<N;r++){
+          addMark(marks,r,c,"z");
+        }
+      }else if(seg.mode==="single-green"){
+        for(let r=seg.rmin;r<=seg.rmax;r++){
+          addMark(marks,r,c,"z");
+        }
+      }else if(seg.mode==="red-between"){
+        const T = seg.topEnd+1;
+        const B = seg.bottomStart-1;
+        if(T<=B){
+          for(let r=T;r<=B;r++){
+            addMark(marks,r,c,"p");
+          }
+        }
+      }
+    }
+  }
+
+  function drawLabels(board, waterPts, marks){
+    svgLbl.innerHTML = "";
+    svgLbl.style.display = (OVERLAY_MODE===2) ? "block" : "none";
+
+    function addMain(x,y,txt,color,size,weight){
+      const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x", x+0.5);
+      t.setAttribute("y", y+0.6);
+      t.setAttribute("text-anchor","middle");
+      t.setAttribute("font-family","monospace");
+      t.setAttribute("font-size",String(size));
+      t.setAttribute("font-weight",weight);
+      t.setAttribute("fill",color);
+      t.textContent = txt;
+      svgLbl.appendChild(t);
+    }
+
+    function addSub(x,y,txt,color,size,weight){
+      if(!txt) return;
+      const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x", x+0.5);
+      t.setAttribute("y", y+0.9);
+      t.setAttribute("text-anchor","middle");
+      t.setAttribute("font-family","monospace");
+      t.setAttribute("font-size",String(size));
+      t.setAttribute("font-weight",weight);
+      t.setAttribute("fill",color);
+      t.textContent = txt.toLowerCase();
+      svgLbl.appendChild(t);
+    }
+
+    function waterCornersCount(r,c){
+      const corners = [
+        [r,c],[r+1,c],
+        [r,c+1],[r+1,c+1]
+      ];
+      let cnt = 0;
+      for(const pair of corners){
+        const pr = pair[0];
+        const pc = pair[1];
+        if(pr>=1 && pr<=N-1 && pc>=1 && pc<=N-1){
+          const k = pr + "," + pc;
+          if(waterPts.has(k)) cnt++;
+        }
+      }
+      return cnt;
+    }
+
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        if(board.g[r][c]===1){
+          let code = "D";
+          const ship = board.ships.find(
+            function(s){ return s.cells.some(
+              function(p){ return p[0]===r && p[1]===c; }
+            ); }
+          );
+          if(ship){
+            if(ship.name==="AL") code="A";
+            else if(ship.name==="BE") code="B";
+            else if(ship.name==="GA") code="G";
+          }
+          addMain(c,r,code,"#ffffff",0.42,"800");
+        }else{
+          const cnt = waterCornersCount(r,c);
+          addMain(c,r,String(cnt),"#062e4f",0.42,"800");
+        }
+        const mk = marks[r][c];
+        const subColor = board.g[r][c]===1 ? "#f6f7ff" : "#153c5d";
+        addSub(c,r,mk,subColor,0.28,"700");
+      }
+    }
+  }
+
+  /* ===== lOPZ + pont mátrix + kikötés ===== */
+
+  function computeLOPZ(board,rowInfo,colInfo){
+    const perShip = new Map();
+    for(const s of board.ships){
+      perShip.set(s,{ P:0, Z:0 });
+    }
+
+    for(const seg of rowInfo){
+      if(seg.mode==="single-green"){
+        const rec = perShip.get(seg.ship);
+        if(rec) rec.Z++;
+      }else if(seg.mode==="red-between"){
+        const L = seg.leftEnd+1;
+        const R = seg.rightStart-1;
+        if(L<=R){
+          for(const it of seg.list){
+            const cols = [];
+            for(const pair of it.ship.cells){
+              if(pair[0]===seg.r) cols.push(pair[1]);
+            }
+            let hit = false;
+            for(const c of cols){
+              if(c>=L && c<=R){
+                hit = true;
+                break;
+              }
+            }
+            if(hit){
+              const rec = perShip.get(it.ship);
+              if(rec) rec.P++;
+            }
+          }
+        }
+      }
+    }
+
+    for(const seg of colInfo){
+      if(seg.mode==="single-green"){
+        const rec = perShip.get(seg.ship);
+        if(rec) rec.Z++;
+      }else if(seg.mode==="red-between"){
+        const T = seg.topEnd+1;
+        const B = seg.bottomStart-1;
+        if(T<=B){
+          for(const it of seg.list){
+            const rows = [];
+            for(const pair of it.ship.cells){
+              if(pair[1]===seg.c) rows.push(pair[0]);
+            }
+            let hit = false;
+            for(const r of rows){
+              if(r>=T && r<=B){
+                hit = true;
+                break;
+              }
+            }
+            if(hit){
+              const rec = perShip.get(it.ship);
+              if(rec) rec.P++;
+            }
+          }
+        }
+      }
+    }
+
+    const alfa = board.ships.find(function(s){ return s.name==="AL"; });
+    let alfaOrient = "H";
+    if(alfa){
+      const cs = alfa.cells;
+      const h = (cs[0][0]===cs[cs.length-1][0]);
+      alfaOrient = h ? "H" : "V";
+    }
+
+    function O_of(s){
+      if(s.name==="DE") return " ";
+      const cs = s.cells;
+      const h = (cs[0][0]===cs[cs.length-1][0]);
+      const orient = h ? "H" : "V";
+      return orient===alfaOrient ? "p" : "m";
+    }
+
+    const out = { AL:[], BE:[], GA:[], DE:[] };
+    for(const s of board.ships){
+      const rec = perShip.get(s);
+      const P = rec ? rec.P : 0;
+      const Z = rec ? rec.Z : 0;
+      const code = O_of(s) + String(P) + String(Z);
+      out[s.name].push(code);
+    }
+
+    const ord = { "p":0, "m":1, " ":2 };
+    function sortGroup(arr){
+      const copy = arr.slice();
+      copy.sort(function(a,b){
+        const oa = ord[a[0]];
+        const ob = ord[b[0]];
+        if(oa!==ob) return oa-ob;
+        const na = parseInt(a.slice(1),10);
+        const nb = parseInt(b.slice(1),10);
+        return na-nb;
+      });
+      return copy;
+    }
+
+    out.AL = sortGroup(out.AL);
+    out.BE = sortGroup(out.BE);
+    out.GA = sortGroup(out.GA);
+    out.DE = sortGroup(out.DE);
+    return out;
+  }
+
+  function buildPointsMatrix(board){
+    const P = [];
+    for(let r=0;r<N;r++){
+      const row = [];
+      for(let c=0;c<N;c++){
+        row.push("X");
+      }
+      P.push(row);
+    }
+    for(let r=0;r<N-1;r++){
+      for(let c=0;c<N-1;c++){
+        const adj = [
+          [r,c],[r,c+1],
+          [r+1,c],[r+1,c+1]
+        ];
+        let hasShip = false;
+        for(const pair of adj){
+          const rr = pair[0];
+          const cc = pair[1];
+          if(board.g[rr][cc]===1){
+            hasShip = true;
+            break;
+          }
+        }
+        P[r][c] = hasShip ? "H" : "V";
+      }
+    }
+    return P;
+  }
+
+  function countDocked(board){
+    let n = 0;
+    for(const s of board.ships){
+      const cs = s.cells;
+      const ends = cs.length===1 ? [cs[0]] : [cs[0], cs[cs.length-1]];
+      const touch = [];
+      for(const pair of ends){
+        const r = pair[0];
+        const c = pair[1];
+        if(r===0 || r===N-1 || c===0 || c===N-1){
+          touch.push(pair);
+        }
+      }
+      if(touch.length===1) n++;
+    }
+    return n;
+  }
+
+  function buildSeedText(board,rowInfo,colInfo,marks,waterPts,islands){
+    const nVV =
+      rowInfo.filter(function(x){ return x.mode==="full-green"; }).length +
+      colInfo.filter(function(x){ return x.mode==="full-green"; }).length;
+
+    const nKH = countDocked(board);
+    const lSZ = islands.length>0 ? islands.join(" - ") : "";
+
+    const lOPZ = computeLOPZ(board,rowInfo,colInfo);
+
+    function toCode(r,c){
+      const mk0 = marks[r][c] || "";
+      const mk = (mk0==="") ? "x" : mk0;
+      if(board.g[r][c]===1){
+        let base = "D";
+        const ship = board.ships.find(
+          function(s){ return s.cells.some(
+            function(p){ return p[0]===r && p[1]===c; }
+          ); }
+        );
+        if(ship){
+          if(ship.name==="AL") base="A";
+          else if(ship.name==="BE") base="B";
+          else if(ship.name==="GA") base="G";
+        }
+        let txt = base + mk;
+        while(txt.length<3) txt += " ";
+        return txt;
+      }else{
+        const corners = [
+          [r,c],[r+1,c],
+          [r,c+1],[r+1,c+1]
+        ];
+        let cnt = 0;
+        for(const pair of corners){
+          const pr = pair[0];
+          const pc = pair[1];
+          if(pr>=1 && pr<=N-1 && pc>=1 && pc<=N-1){
+            const k = pr + "," + pc;
+            if(waterPts.has(k)) cnt++;
+          }
+        }
+        let txt = String(cnt) + mk;
+        while(txt.length<3) txt += " ";
+        return txt;
+      }
+    }
+
+    const P = buildPointsMatrix(board);
+
+    let txt = "";
+    txt += "SEED: 0\n";
+    txt += "nVV: " + String(nVV) + "\n";
+    txt += "lSZ: " + lSZ + "\n";
+    txt += "nKH: " + String(nKH) + "\n\n";
+
+    txt += "lOPZ:\n";
+    const order = ["AL","BE","GA","DE"];
+    for(const code of order){
+      const arr = lOPZ[code] || [];
+      txt += code + ": " + arr.join(" ") + "\n";
+    }
+
+    txt += "\nMATRIX:\n";
+    for(let r=0;r<N;r++){
+      const row = [];
+      for(let c=0;c<N;c++){
+        row.push(toCode(r,c));
+      }
+      txt += row.join(" ") + "\n";
+    }
+
+    txt += "\nPONTOK:\n";
+    for(let r=0;r<N;r++){
+      txt += P[r].join(" ") + "\n";
+    }
+
+    return { txt:txt, nVV:nVV, nKH:nKH, lSZ:lSZ, lOPZ:lOPZ };
+  }
+
+  /* ===== rajzolás + panel frissítés ===== */
+
+  function renderBoard(){
+    const showEndLabels = !(derivedAvailable && OVERLAY_MODE>0);
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        const el = cells[r][c];
+        el.classList.remove("ship");
+        el.classList.remove("first-end");
+        el.classList.remove("end");
+        el.textContent = "";
+      }
+    }
+
+    for(const s of state.ships){
+      for(const pair of s.cells){
+        const r = pair[0];
+        const c = pair[1];
+        if(inBounds(r,c)){
+          cells[r][c].classList.add("ship");
+        }
+      }
+    }
+
+    for(const slot of shipSlots){
+      const ship = slot.placedShip;
+      if(!ship) continue;
+      const cs = ship.cells;
+      const label = slot.button ? String(slot.button.textContent || "") : "";
+      if(cs.length===1){
+        const r = cs[0][0];
+        const c = cs[0][1];
+        if(inBounds(r,c)){
+          cells[r][c].classList.add("end");
+          if(showEndLabels) cells[r][c].textContent = label;
+        }
+      }else if(cs.length>1){
+        const a = cs[0];
+        const b = cs[cs.length-1];
+        if(inBounds(a[0],a[1])){
+          cells[a[0]][a[1]].classList.add("end");
+          if(showEndLabels) cells[a[0]][a[1]].textContent = label;
+        }
+        if(inBounds(b[0],b[1])){
+          cells[b[0]][b[1]].classList.add("end");
+          if(showEndLabels) cells[b[0]][b[1]].textContent = label;
+        }
+      }
+    }
+
+    if(firstCell){
+      const r = firstCell.r;
+      const c = firstCell.c;
+      if(inBounds(r,c)){
+        cells[r][c].classList.add("first-end");
+      }
+    }
+  }
+
+  
+  function updateHexa(){
+    // 80 bites (9x9 - jobb alsó sarok elhagyva), sorfolytonosan
+    let bits = "";
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        if(r===N-1 && c===N-1) continue; // ez mindig 0
+        bits += (state.g[r][c]===1 ? "1" : "0");
+      }
+    }
+    // 80 bit => 20 hexa számjegy
+    let hex = "";
+    try{
+      const val = BigInt("0b" + bits);
+      hex = val.toString(16).toUpperCase();
+    }catch(_e){
+      hex = "";
+    }
+    while(hex.length < 20) hex = "0" + hex;
+
+    // 4 hexa / blokk tagolás (regex nélkül)
+    let out = "";
+    for(let i=0;i<hex.length;i+=4){
+      if(out!=="") out += " ";
+      out += hex.slice(i,i+4);
+    }
+    hexaDisp.textContent = out==="" ? "—" : out;
+  }
+
+function updateDerived(){
+    const rowInfo   = computeRowInfo(state);
+    const colInfo   = computeColInfo(state);
+    const waterPts  = computeWaterPoints(state);
+    const islands   = bfsIslands(waterPts);
+    const marks     = buildMarksGrid();
+    fillMarksGrid(marks,rowInfo,colInfo,state);
+
+    const allPlaced = validateAllShipsPlaced();
+    derivedAvailable = derivedUnlockedManual || allPlaced;
+
+    if(allPlaced && !lastAllPlaced){
+      // 10 hajó hibátlan lerakása után: automatikus megjelenítés,
+      // DE ha a felhasználó már választott Jelek-módot, ne írjuk felül.
+      if(!overlayUserChoice){
+        OVERLAY_MODE = 2;
+      }
+    }
+    lastAllPlaced = allPlaced;
+
+    if(derivedAvailable && OVERLAY_MODE>0){
+      drawLines(rowInfo,colInfo);
+      drawIslands(waterPts);
+      if(OVERLAY_MODE===2){
+        drawLabels(state,waterPts,marks);
+      }else{
+        // vonalak+szigetek maradnak, feliratok nélkül
+        svgLbl.innerHTML = "";
+      }
+    }else{
+      clearOverlays();
+    }
+
+    const seedData = buildSeedText(state,rowInfo,colInfo,marks,waterPts,islands);
+
+    if(derivedAvailable){
+      vvDisp.textContent = String(seedData.nVV);
+      khDisp.textContent = String(seedData.nKH);
+      szDisp.textContent = seedData.lSZ==="" ? "—" : seedData.lSZ;
+    }else{
+      vvDisp.textContent = "—";
+      khDisp.textContent = "—";
+      szDisp.textContent = "—";
+    }
+
+    // felső infópanel: csak KÉSZ+OK esetben írjuk ki
+    if(seedUnlocked){
+      vvBox.textContent = String(seedData.nVV);
+      khBox.textContent = String(seedData.nKH);
+      szigBox.textContent = seedData.lSZ==="" ? "—" : seedData.lSZ;
+    }else{
+      vvBox.textContent = "—";
+      khBox.textContent = "—";
+      szigBox.textContent = "—";
+    }
+
+    if(seedUnlocked){
+      const lines = (seedData.txt || "").split("\n");
+      let mIdx = -1;
+      let pIdx = -1;
+      for(let i=0;i<lines.length;i++){
+        if(mIdx<0 && String(lines[i]).trim().toUpperCase()==="MATRIX:") mIdx = i;
+        if(pIdx<0 && String(lines[i]).trim().toUpperCase()==="PONTOK:") pIdx = i;
+      }
+      if(mIdx>=0 && pIdx>mIdx){
+        const mLines = [];
+        for(let i=mIdx+1;i<pIdx;i++){
+          if(lines[i].trim()!==""){
+            mLines.push(lines[i]);
+          }
+        }
+        matrixPre.textContent = mLines.join("\n");
+
+        const pLines = [];
+        for(let i=pIdx+1;i<lines.length;i++){
+          if(lines[i].trim()!==""){
+            pLines.push(lines[i]);
+          }
+        }
+        pointsPre.textContent = pLines.join("\n");
+      }else{
+        matrixPre.textContent = "—";
+        pointsPre.textContent = "—";
+      }
+
+      const order = ["AL","BE","GA","DE"];
+      const lopzLines = [];
+      for(const code of order){
+        const arr = seedData.lOPZ[code] || [];
+        lopzLines.push(code + ": " + arr.join(" "));
+      }
+      opzPre.textContent = lopzLines.join("\n");
+
+      saveSeedBtn.dataset.seedtxt = seedData.txt;
+    }else{
+      matrixPre.textContent = "—";
+      pointsPre.textContent = "—";
+      opzPre.textContent = "—";
+      saveSeedBtn.dataset.seedtxt = "";
+    }
+
+    updateHexa();
+
+    setOverlayVisibility();
+    renderBoard();
+  }
+
+  /* ===== shipSlot segéd függvények ===== */
+
+  function clearSelection(){
+    selectedSlot = undefined;
+    for(const slot of shipSlots){
+      if(slot.button){
+        slot.button.classList.remove("selected");
+      }
+    }
+  }
+
+  function removeShipFromSlot(slot){
+    if(!slot.placedShip) return;
+    invalidateSeed();
+    const ship = slot.placedShip;
+    for(const pair of ship.cells){
+      const r = pair[0];
+      const c = pair[1];
+      if(inBounds(r,c)){
+        state.g[r][c] = 0;
+      }
+    }
+    const idx = state.ships.indexOf(ship);
+    if(idx>=0) state.ships.splice(idx,1);
+    slot.placedShip = undefined;
+    if(slot.button){
+      slot.button.classList.remove("done");
+    }
+  }
+
+  function findSlotByEndpoint(r,c){
+    for(const slot of shipSlots){
+      const ship = slot.placedShip;
+      if(!ship) continue;
+      const cs = ship.cells;
+      let ends;
+      if(cs.length===1){
+        ends = [cs[0]];
+      }else{
+        ends = [cs[0], cs[cs.length-1]];
+      }
+      for(const pair of ends){
+        if(pair[0]===r && pair[1]===c) return slot;
+      }
+    }
+    return undefined;
+  }
+
+  function nextFreeSlotByName(name){
+    for(const slot of shipSlots){
+      if(slot.name===name && !slot.placedShip){
+        return slot;
+      }
+    }
+    return undefined;
+  }
+
+  function clearDoneButtonState(){
+    doneBtn.classList.remove("error");
+    // "ok" csak akkor marad, ha utoljára jó volt – itt nem töröljük kötelezően
+  }
+  function flashButton(btn){
+    if(!btn) return;
+    btn.classList.remove("flash");
+    void btn.offsetWidth;
+    btn.classList.add("flash");
+    window.setTimeout(function(){
+      btn.classList.remove("flash");
+    }, 520);
+  }
+
+  function flashFailButton(btn){
+    if(!btn) return;
+    btn.classList.add("fail");
+
+    // hosszabb, határozottabb hibajelzés
+    btn.classList.remove("failflash");
+    void btn.offsetWidth;
+    btn.classList.add("failflash");
+
+    window.setTimeout(function(){
+      btn.classList.remove("failflash");
+    }, FAIL_FLASH_MS);
+
+    window.setTimeout(function(){
+      btn.classList.remove("fail");
+    }, FAIL_FLASH_MS + 120);
+  }
+
+  const RULE_EL = {
+    touch:   ruleTouchCb,
+    docking: ruleDockingCb,
+    apex:    ruleApexCb,
+    center:  ruleCenterCb,
+    side:    ruleSideCb
+  };
+
+  function flashRule(key){
+    const cb = RULE_EL[key];
+    if(!cb) return;
+    const lab = cb.closest("label");
+    if(!lab) return;
+    lab.classList.remove("ruleflash");
+    void lab.offsetWidth;
+    lab.classList.add("ruleflash");
+    window.setTimeout(function(){
+      lab.classList.remove("ruleflash");
+    }, RULE_FLASH_MS);
+  }
+
+  function clearRuleErrorIndicators(){
+    for(const key in RULE_EL){
+      const cb = RULE_EL[key];
+      if(!cb) continue;
+      const lab = cb.closest("label");
+      if(lab) lab.classList.remove("ruleerror");
+    }
+  }
+
+  function setRuleErrorIndicators(keys){
+    clearRuleErrorIndicators();
+    if(!keys) return;
+    for(const k of keys){
+      const cb = RULE_EL[k];
+      if(!cb) continue;
+      const lab = cb.closest("label");
+      if(lab) lab.classList.add("ruleerror");
+    }
+  }
+
+  function flashPlacementFails(fails){
+    // mindig villanjon a KÉSZ (hibajelzés), a szabály(ok) csak ha azonosíthatók
+    flashFailButton(doneBtn);
+    if(!fails) return;
+    for(const k of fails){
+      flashRule(k);
+    }
+  }
+
+  function checkPlacement(board, r, c, size, orient, name){
+    const fails = [];
+    const cellsArr = shipCells(r,c,size,orient);
+
+    for(const pair of cellsArr){
+      const rr = pair[0];
+      const cc = pair[1];
+
+      if(!inBounds(rr,cc)){
+        // táblán kívül: mindig tiltott, külön kapcsoló nincs
+        return { ok:false, fails:fails, cells:cellsArr };
+      }
+    }
+
+    if(RULES.touch && !noTouch(board.g, cellsArr)) fails.push("touch");
+    if(RULES.docking && !dockingRuleOK(cellsArr)) fails.push("docking");
+    if(RULES.apex && !apexRuleOK(cellsArr, board.ships, board.g)) fails.push("apex");
+    if(RULES.center && !centerRuleOK(cellsArr, name, board.ships)) fails.push("center");
+    if(RULES.side && !sideRuleOK(cellsArr, board.ships)) fails.push("side");
+
+    // egyedi kulcsok
+    const uniq = [];
+    for(const k of fails){
+      if(uniq.indexOf(k)<0) uniq.push(k);
+    }
+    return { ok: uniq.length===0, fails: uniq, cells:cellsArr };
+  }
+
+
+  function invalidateSeed(){
+    seedUnlocked = false;
+    doneBtn.classList.remove("ok");
+    doneBtn.classList.remove("error");
+    clearRuleErrorIndicators();
+  }
+
+  function setOverlayVisibility(){
+    const showOver = derivedAvailable && OVERLAY_MODE>0;
+    const showLbl  = derivedAvailable && OVERLAY_MODE===2;
+
+    svgIsl.style.display = showOver ? "block" : "none";
+    svgLin.style.display = showOver ? "block" : "none";
+    svgLbl.style.display = showLbl ? "block" : "none";
+
+    if(derivedAvailable){
+      toggleLabelsBtn.classList.remove("dim");
+      toggleLabelsBtn.disabled = false;
+    }else{
+      toggleLabelsBtn.classList.add("dim");
+      toggleLabelsBtn.disabled = true;
+    }
+
+    if(seedUnlocked){
+      saveSeedBtn.classList.remove("dim");
+      saveSeedBtn.disabled = false;
+    }else{
+      saveSeedBtn.classList.add("dim");
+      saveSeedBtn.disabled = true;
+    }
+  }
+
+  function clearOverlays(){
+    svgIsl.innerHTML = "";
+    svgLin.innerHTML = "";
+    svgLbl.innerHTML = "";
+  }
+
+  function splitTokensWS(s){
+    const out = [];
+    let cur = "";
+    for(let i=0;i<s.length;i++){
+      const ch = s[i];
+      if(ch===" " || ch==="\t"){
+        if(cur!==""){
+          out.push(cur);
+          cur = "";
+        }
+      }else{
+        cur += ch;
+      }
+    }
+    if(cur!=="") out.push(cur);
+    return out;
+  }
+
+  function commitShipByCells(useSlot, shipName, cellsArr, orient){
+    for(const pair of cellsArr){
+      const rr = pair[0];
+      const cc = pair[1];
+      if(inBounds(rr,cc)){
+        state.g[rr][cc] = 1;
+      }
+    }
+    const ship = {
+      name: shipName,
+      size: cellsArr.length,
+      cells: cellsArr,
+      orient: orient
+    };
+    state.ships.push(ship);
+    useSlot.placedShip = ship;
+    if(useSlot.button){
+      useSlot.button.classList.add("done");
+    }
+  }
+
+  function commitShip(useSlot, shipName, startR, startC, size, orient){
+    invalidateSeed();
+    const cellsArr = shipCells(startR,startC,size,orient);
+    if(cellsArr.length!==size){
+      firstCell = undefined;
+      renderBoard();
+      return;
+    }
+    commitShipByCells(useSlot, shipName, cellsArr, orient);
+    firstCell = undefined;
+    clearSelection();
+    renderBoard();
+    updateDerived();
+  }
+
+  function resetAll(full){
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        state.g[r][c] = 0;
+      }
+    }
+    state.ships.length = 0;
+
+    for(const slot of shipSlots){
+      slot.placedShip = undefined;
+      if(slot.button){
+        slot.button.classList.remove("done");
+        slot.button.classList.remove("selected");
+      }
+    }
+
+    selectedSlot = undefined;
+    firstCell = undefined;
+
+    invalidateSeed();
+    doneBtn.classList.remove("ok");
+    doneBtn.classList.remove("error");
+
+    derivedUnlockedManual = false;
+    derivedAvailable = false;
+    lastAllPlaced = false;
+    overlayUserChoice = false;
+    OVERLAY_MODE = 0;
+
+    clearOverlays();
+    setOverlayVisibility();
+    renderBoard();
+    updateDerived();
+  }
+
+  function loadFromSeedText(txt){
+    resetAll(false);
+
+    const rawLines = String(txt).split("\n");
+    const lines = [];
+    for(const ln of rawLines){
+      lines.push(ln.replace("\r",""));
+    }
+
+    let mIdx = -1;
+    for(let i=0;i<lines.length;i++){
+      const t = lines[i].trim();
+      if(t.toUpperCase()==="MATRIX:"){
+        mIdx = i;
+        break;
+      }
+    }
+    if(mIdx<0) return;
+
+    const matrixLines = [];
+    for(let i=mIdx+1;i<lines.length && matrixLines.length<9;i++){
+      const t = lines[i].trim();
+      if(t==="") continue;
+      if(t.toUpperCase()==="PONTOK:") break;
+      matrixLines.push(t);
+    }
+    if(matrixLines.length!==9) return;
+
+    const L = Array.from({length:N}, function(){ return Array(N).fill(""); });
+    for(let r=0;r<N;r++){
+      const parts = splitTokensWS(matrixLines[r]);
+      if(parts.length<9) return;
+      for(let c=0;c<N;c++){
+        const tok = String(parts[c]);
+        const ch = tok.length>0 ? tok[0] : "";
+        if(ch==="A" || ch==="B" || ch==="G" || ch==="D"){
+          L[r][c] = ch;
+        }
+      }
+    }
+
+    const seen = Array.from({length:N}, function(){ return Array(N).fill(false); });
+
+    function pushIf(q, rr, cc){
+      if(inBounds(rr,cc) && !seen[rr][cc] && L[rr][cc]!==""){
+        seen[rr][cc] = true;
+        q.push([rr,cc]);
+      }
+    }
+
+    for(let r=0;r<N;r++){
+      for(let c=0;c<N;c++){
+        if(L[r][c]==="" || seen[r][c]) continue;
+        const letter = L[r][c];
+        const q = [[r,c]];
+        seen[r][c] = true;
+        const comp = [];
+        while(q.length>0){
+          const p = q.shift();
+          const rr = p[0];
+          const cc = p[1];
+          comp.push([rr,cc]);
+
+          pushIf(q, rr-1, cc);
+          pushIf(q, rr+1, cc);
+          pushIf(q, rr, cc-1);
+          pushIf(q, rr, cc+1);
+        }
+
+        // ellenőrzés: egy komponenst egy betű jelöljön
+        for(const pair of comp){
+          const rr = pair[0];
+          const cc = pair[1];
+          if(L[rr][cc]!==letter) return;
+        }
+
+        // típus/név + orient + rendezett cellák
+        let shipName;
+        if(letter==="A") shipName = "AL";
+        else if(letter==="B") shipName = "BE";
+        else if(letter==="G") shipName = "GA";
+        else shipName = "DE";
+
+        let orient = 0;
+        if(comp.length>1){
+          let sameR = true;
+          let sameC = true;
+          for(const pair of comp){
+            if(pair[0]!==comp[0][0]) sameR = false;
+            if(pair[1]!==comp[0][1]) sameC = false;
+          }
+          if(sameR && !sameC) orient = 0;
+          else if(sameC && !sameR) orient = 1;
+          else return;
+        }
+
+        // rendezés
+        if(orient===0){
+          comp.sort(function(a,b){ return a[1]-b[1]; });
+        }else{
+          comp.sort(function(a,b){ return a[0]-b[0]; });
+        }
+
+        const useSlot = nextFreeSlotByName(shipName);
+        if(!useSlot) return;
+
+        // a belső ellenőrzéshez: ugyanazt a canPlaceShip szabályt használjuk
+        const startR = comp[0][0];
+        const startC = comp[0][1];
+        const size = comp.length;
+        const chkB = checkPlacement(state,startR,startC,size,orient,shipName);
+        if(!chkB.ok){
+          flashPlacementFails(chkB.fails);
+          return;
+        }
+
+        commitShipByCells(useSlot, shipName, comp, orient);
+      }
+    }
+
+    const allPlaced = validateAllShipsPlaced();
+    derivedAvailable = derivedUnlockedManual || allPlaced;
+    if(allPlaced){
+      OVERLAY_MODE = 2;
+    }
+
+    renderBoard();
+    updateDerived();
+  }
+
+
+
+  /* ===== cellakattintás: törlés vagy elhelyezés ===== */
+
+  function handleCellClick(ev){
+    const el = ev.currentTarget;
+    const r = parseInt(el.dataset.r,10);
+    const c = parseInt(el.dataset.c,10);
+
+    clearDoneButtonState();
+
+    if(!firstCell){
+      const slot = findSlotByEndpoint(r,c);
+      if(slot){
+        removeShipFromSlot(slot);
+        invalidateSeed();
+        clearSelection();
+        renderBoard();
+        updateDerived();
+        return;
+      }
+      // 1-mezős hajó (DE) azonnali lerakása egy kattintással
+      if(selectedSlot && selectedSlot.size===1){
+        if(selectedSlot.placedShip){
+          flashFailButton(doneBtn);
+          renderBoard();
+          return;
+        }
+        const chk = checkPlacement(state,r,c,1,0,selectedSlot.name);
+        if(chk.ok){
+          commitShip(selectedSlot, selectedSlot.name, r, c, 1, 0);
+          return;
+        }
+        // sikertelen lerakás: ne lépjünk kétkattintásos módba
+        renderBoard();
+        return;
+      }
+      firstCell = { r:r, c:c };
+      firstCellAt = Date.now();
+      renderBoard();
+      return;
+    }
+
+    if(firstCell && firstCell.r===r && firstCell.c===c){
+      const now = Date.now();
+      const canDE = (!selectedSlot || selectedSlot.size===1) && (now - firstCellAt) <= DE_SECOND_CLICK_MS;
+      if(canDE){
+        let useSlot = (selectedSlot && selectedSlot.size===1) ? selectedSlot : firstFreeDeltaSlot();
+        if(!useSlot || useSlot.placedShip){
+          useSlot = firstFreeDeltaSlot();
+        }
+        if(useSlot){
+          const chk = checkPlacement(state,r,c,1,0,useSlot.name);
+          if(chk.ok){
+            firstCell = undefined;
+            firstCellAt = 0;
+            commitShip(useSlot, useSlot.name, r, c, 1, 0);
+            return;
+          }else{
+            flashPlacementFails(chk.fails);
+            firstCell = undefined;
+            firstCellAt = 0;
+            renderBoard();
+            return;
+          }
+        }else{
+          flashFailButton(doneBtn);
+        }
+      }
+      firstCell = undefined;
+      firstCellAt = 0;
+      renderBoard();
+      return;
+    }
+
+    let orient;
+    let size;
+
+    if(firstCell.r===r && firstCell.c!==c){
+      orient = 0; // vízszintes
+      size = Math.abs(firstCell.c - c) + 1;
+    }else if(firstCell.c===c && firstCell.r!==r){
+      orient = 1; // függőleges
+      size = Math.abs(firstCell.r - r) + 1;
+    }else{
+      firstCell = undefined;
+      renderBoard();
+      return;
+    }
+
+    if(size<1 || size>4){
+      firstCell = undefined;
+      renderBoard();
+      return;
+    }
+
+    let useSlot;
+    let shipName;
+
+    if(selectedSlot){
+      if(selectedSlot.size!==size){
+        firstCell = undefined;
+        renderBoard();
+        return;
+      }
+      if(selectedSlot.placedShip){
+        flashFailButton(doneBtn);
+        firstCell = undefined;
+        renderBoard();
+        return;
+      }
+      useSlot = selectedSlot;
+      shipName = selectedSlot.name;
+    }else{
+      if(size===4) shipName = "AL";
+      else if(size===3) shipName = "BE";
+      else if(size===2) shipName = "GA";
+      else shipName = "DE";
+      useSlot = nextFreeSlotByName(shipName);
+      if(!useSlot){
+        flashFailButton(doneBtn);
+        firstCell = undefined;
+        renderBoard();
+        return;
+      }
+    }
+
+    let startR;
+    let startC;
+    if(orient===0){
+      startR = firstCell.r;
+      startC = firstCell.c<c ? firstCell.c : c;
+    }else{
+      startC = firstCell.c;
+      startR = firstCell.r<r ? firstCell.r : r;
+    }
+
+    const chk2 = checkPlacement(state,startR,startC,size,orient,shipName);
+    if(!chk2.ok){
+      flashPlacementFails(chk2.fails);
+      firstCell = undefined;
+      renderBoard();
+      return;
+    }
+
+    commitShip(useSlot, shipName, startR, startC, size, orient);
+    return;
+  }
+
+
+  function firstFreeDeltaSlot(){
+    for(const slot of shipSlots){
+      if(slot.size===1 && !slot.placedShip) return slot;
+    }
+    return undefined;
+  }
+
+  function handleCellDblClick(ev){
+    ev.preventDefault();
+    const el = ev.currentTarget;
+    const r = parseInt(el.dataset.r,10);
+    const c = parseInt(el.dataset.c,10);
+
+    clearDoneButtonState();
+
+    // dupla kattintás: gyors DE lerakás (kijelölt DE vagy első szabad DE)
+    let useSlot = (selectedSlot && selectedSlot.size===1) ? selectedSlot : firstFreeDeltaSlot();
+    if(!useSlot || useSlot.placedShip){
+      useSlot = firstFreeDeltaSlot();
+    }
+    if(!useSlot){
+      flashFailButton(doneBtn);
+      return;
+    }
+
+    const chk = checkPlacement(state,r,c,1,0,useSlot.name);
+    if(!chk.ok){
+      flashPlacementFails(chk.fails);
+      return;
+    }
+    commitShip(useSlot, useSlot.name, r, c, 1, 0);
+  }
+
+
+  /* ===== KÉSZ gomb: globális ellenőrzés ===== */
+
+  function validateAllShipsPlaced(){
+    const expected = [];
+    for(const spec of SHIP_SPECS){
+      for(let i=0;i<spec.count;i++){
+        expected.push(spec.key);
+      }
+    }
+    const actual = [];
+    for(const slot of shipSlots){
+      if(slot.placedShip){
+        actual.push(slot.name);
+      }
+    }
+    if(actual.length!==expected.length) return false;
+
+    const need = {};
+    for(const e of expected){
+      if(!need[e]) need[e] = 0;
+      need[e] += 1;
+    }
+    const have = {};
+    for(const a of actual){
+      if(!have[a]) have[a] = 0;
+      have[a] += 1;
+    }
+    for(const key in need){
+      if(!have[key] || have[key]!==need[key]) return false;
+    }
+    return true;
+  }
+
+  function sidePairConflict(cellsA, cellsB){
+    let aRmin=999,aRmax=-999,aCmin=999,aCmax=-999;
+    for(const p of cellsA){
+      if(p[0]<aRmin) aRmin=p[0];
+      if(p[0]>aRmax) aRmax=p[0];
+      if(p[1]<aCmin) aCmin=p[1];
+      if(p[1]>aCmax) aCmax=p[1];
+    }
+    let bRmin=999,bRmax=-999,bCmin=999,bCmax=-999;
+    for(const p of cellsB){
+      if(p[0]<bRmin) bRmin=p[0];
+      if(p[0]>bRmax) bRmax=p[0];
+      if(p[1]<bCmin) bCmin=p[1];
+      if(p[1]>bCmax) bCmax=p[1];
+    }
+
+    const aOrient = (aRmin===aRmax) ? "H" : "V";
+    const bOrient = (bRmin===bRmax) ? "H" : "V";
+    if(aOrient!==bOrient) return false;
+
+    if(aOrient==="H"){
+      const overlap = Math.max(0, Math.min(aCmax,bCmax) - Math.max(aCmin,bCmin) + 1);
+      if(overlap>=2){
+        const gap = Math.abs(aRmin-bRmin) - 1;
+        if(gap<2) return true;
+      }
+    }else{
+      const overlap = Math.max(0, Math.min(aRmax,bRmax) - Math.max(aRmin,bRmin) + 1);
+      if(overlap>=2){
+        const gap = Math.abs(aCmin-bCmin) - 1;
+        if(gap<2) return true;
+      }
+    }
+    return false;
+  }
+
+  function validateRulesOnBoard(board){
+    const violated = [];
+    const ships = board.ships;
+    const g = board.g;
+
+    if(RULES.touch){
+      let ok = true;
+      for(const s of ships){
+        if(!noTouchIgnoreSelf(g, s.cells)){ ok = false; break; }
+      }
+      if(!ok) violated.push("touch");
+    }
+
+    if(RULES.docking){
+      let ok = true;
+      for(const s of ships){
+        if(!dockingRuleOK(s.cells)){ ok = false; break; }
+      }
+      if(!ok) violated.push("docking");
+    }
+
+    if(RULES.apex){
+      let ok = true;
+      for(const s of ships){
+        if(!apexRuleOK(s.cells, ships, g)){ ok = false; break; }
+      }
+      if(!ok) violated.push("apex");
+    }
+
+    if(RULES.center){
+      let ok = true;
+      for(let i=0;i<ships.length && ok;i++){
+        for(let j=i+1;j<ships.length && ok;j++){
+          const a = ships[i];
+          const b = ships[j];
+          if(a.name!==b.name) continue;
+          const ca = centerTimes2(a.cells);
+          const cb = centerTimes2(b.cells);
+          if(ca.r2===cb.r2 || ca.c2===cb.c2) ok = false;
+        }
+      }
+      if(!ok) violated.push("center");
+    }
+
+    if(RULES.side){
+      let ok = true;
+      for(let i=0;i<ships.length && ok;i++){
+        for(let j=i+1;j<ships.length && ok;j++){
+          if(sidePairConflict(ships[i].cells, ships[j].cells)){
+            ok = false;
+          }
+        }
+      }
+      if(!ok) violated.push("side");
+    }
+
+    return violated;
+  }
+
+  function handleDoneClick(){
+    flashButton(doneBtn);
+
+    derivedUnlockedManual = true;
+    OVERLAY_MODE = 2;
+
+    const allPlaced = validateAllShipsPlaced();
+    if(!allPlaced){
+      seedUnlocked = false;
+      doneBtn.classList.remove("ok");
+      doneBtn.classList.add("error");
+      clearRuleErrorIndicators();
+      updateDerived();
+      return;
+    }
+
+    const violated = validateRulesOnBoard(state);
+    if(violated.length===0){
+      seedUnlocked = true;
+      doneBtn.classList.remove("error");
+      doneBtn.classList.add("ok");
+      clearRuleErrorIndicators();
+    }else{
+      seedUnlocked = false;
+      doneBtn.classList.remove("ok");
+      doneBtn.classList.add("error");
+      setRuleErrorIndicators(violated);
+      flashFailButton(doneBtn);
+    }
+
+    updateDerived();
+  }
+
+  /* ===== inicializálás ===== */
+
+  function initGrid(){
+    for(let r=0;r<N;r++){
+      const row = [];
+      for(let c=0;c<N;c++){
+        const d = document.createElement("div");
+        d.className = "cell";
+        d.dataset.r = String(r);
+        d.dataset.c = String(c);
+        d.addEventListener("click", handleCellClick);
+        gridEl.appendChild(d);
+        row.push(d);
+      }
+      cells.push(row);
+    }
+  }
+
+  function initShipButtons(){
+    for(const slot of shipSlots){
+      const btn = document.getElementById(slot.id);
+      slot.button = btn;
+      slot.placedShip = undefined;
+      btn.classList.add("ship-btn");
+      btn.addEventListener("click", function(){
+        clearDoneButtonState();
+        if(slot.placedShip){
+          removeShipFromSlot(slot);
+          clearSelection();
+          renderBoard();
+          updateDerived();
+          return;
+        }
+        if(selectedSlot===slot){
+          clearSelection();
+          return;
+        }
+        clearSelection();
+        selectedSlot = slot;
+        btn.classList.add("selected");
+      });
+    }
+  }
+
+  function initRuleToggles(){
+    function bind(cb, key){
+      if(!cb) return;
+      cb.checked = !!RULES[key];
+      cb.addEventListener("change", function(){
+        RULES[key] = cb.checked;
+        clearRuleErrorIndicators();
+        clearDoneButtonState();
+      });
+    }
+    bind(ruleTouchCb,   "touch");
+    bind(ruleDockingCb, "docking");
+    bind(ruleApexCb,    "apex");
+    bind(ruleCenterCb,  "center");
+    bind(ruleSideCb,    "side");
+  }
+
+
+  function initUI(){
+    initGrid();
+    initShipButtons();
+    initRuleToggles();
+    renderBoard();
+    invalidateSeed();
+    clearOverlays();
+    setOverlayVisibility();
+    updateDerived();
+
+    toggleLabelsBtn.addEventListener("click", function(){
+      flashButton(toggleLabelsBtn);
+      overlayUserChoice = true;
+      if(OVERLAY_MODE===0) OVERLAY_MODE = 2;
+      else if(OVERLAY_MODE===2) OVERLAY_MODE = 1;
+      else OVERLAY_MODE = 0;
+      setOverlayVisibility();
+      renderBoard();
+      updateDerived();
+    });
+
+    saveSeedBtn.addEventListener("click", function(){
+      flashButton(saveSeedBtn);
+      if(!seedUnlocked) return;
+      const txt = saveSeedBtn.dataset.seedtxt || "";
+      if(txt==="") return;
+      const blob = new Blob([txt],{type:"text/plain;charset=utf-8"});
+      const a = document.createElement("a");
+      const d = new Date();
+      const yy = String(d.getFullYear()).slice(2);
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      const tag = yy + mm + dd + "-" + hh + mi;
+      a.href = URL.createObjectURL(blob);
+      a.download = "SEEDMAN-" + tag + ".txt";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    loadSeedBtn.addEventListener("click", function(){
+      flashButton(loadSeedBtn);
+      loadFileInput.value = "";
+      loadFileInput.click();
+    });
+
+    loadFileInput.addEventListener("change", function(){
+      const f = loadFileInput.files && loadFileInput.files[0];
+      if(!f) return;
+      const fr = new FileReader();
+      fr.onload = function(){
+        loadFromSeedText(String(fr.result || ""));
+      };
+      fr.readAsText(f);
+    });
+
+    fullClearBtn.addEventListener("click", function(){
+      flashButton(fullClearBtn);
+      resetAll(true);
+    });
+
+    doneBtn.addEventListener("click", handleDoneClick);
+  }
+
+  initUI();
+</script>
+</body>
+</html>

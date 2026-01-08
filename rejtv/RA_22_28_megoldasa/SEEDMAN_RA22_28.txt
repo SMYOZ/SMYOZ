@@ -1,0 +1,35 @@
+SEED: 0
+nVV: 1
+lSZ: 1 - 2 - 2 - 15
+nKH: 8
+
+lOPZ:
+AL: p01
+BE: p00 p01
+GA: p00 p20 m11
+DE:  00  02  02  11
+
+MATRIX:
+0x  Az  1p  1p  Gp  1p  1pz Bx  0x 
+0x  Az  2p  2p  Gp  2p  2pz Bx  0x 
+0x  Az  1p  1p  0pp 2p  2pz Bx  0x 
+0x  Az  0p  Gz  Gp  2x  3z  1p  0x 
+0x  1x  2x  2x  2p  3x  4z  2p  Dzz
+Dzz 1x  2x  2x  2p  3x  4z  3p  1x 
+1x  1x  Bz  0p  Dx  2x  3z  2p  1x 
+2x  2x  Bz  1p  1p  1p  1pz Gx  0x 
+1x  1x  Bz  1p  1p  Dpz 0pz Gx  0x 
+
+PONTOK:
+H H V H H V H H X
+H H V H H V H H X
+H H H H H V H H X
+H H H H H V V H X
+H V V V V V V H X
+H H H H H V V V X
+V H H H H V H H X
+V H H V H H H H X
+X X X X X X X X X
+
+REJTVÉNY: 
+44 57

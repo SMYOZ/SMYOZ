@@ -1,0 +1,39 @@
+SEED: 254128
+nVV: 0
+lSZ: 1 - 1 - 1 - 1 - 2 - 2 - 2 - 2 - 4
+nKH: 6
+
+lOPZ:
+AL: p11
+BE: p02 m01
+GA: p00 p01 m10
+DE:  00  01  01  01
+
+MATRIX:
+1x 2x 1x Gz 1x 1x 0x 0x 0x
+1x 2x 1x Gx 2p 2p Bz Bx Bx
+0x Bzz 1x 2p 2x 1x 1x 2p 1p
+0x Bz 2p 4pp 2p Az 1x 2p 1p
+0x Bz 1p 2pp 1p Apz 0p Gp Gx
+0x 1x 1x Dx 0p Az 1x 2p 1x
+Dz 1p 1p 1p 1p Az 1x 2p 1x
+1x 1x Dz 1p 1p 1p 1p Gx 0x
+1x 1x 0x 0x Dz 1p 1p Gx 0x
+
+PONTOK:
+V V H H V H H H X
+H H H H V H H H X
+H H V V H H V V X
+H H V V H H H H X
+H H H H H H H H X
+H V H H H H V V X
+H H H V H H H H X
+V H H H H V H H X
+X X X X X X X X X
+
+VONALAK:
+SOROK:   Z P Z P P P P P P
+OSZLOPOK: Z Z Z P Z Z Z P P
+
+REJTVÉNY:
+23 44 65

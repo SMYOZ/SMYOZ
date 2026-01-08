@@ -1,0 +1,34 @@
+SEED: 0
+nVV: 3
+lSZ: 1 - 1 - 2 - 2 - 2
+nKH: 2
+
+lOPZ:
+AL: p00
+BE: m01 m11
+GA: p00 p11 p20
+DE:  00  01  01  10
+
+MATRIX:
+0zz 0z  0z  0z  0z  0z  0z  0z  0z 
+0z  Ax  0p  Bp  Bpz Bp  0p  Gx  0x 
+0z  Ax  1p  2pp 1p  0pp 0p  Gx  0x 
+0z  Ax  1p  2pp 1p  Dp  1x  1p  0x 
+0z  Ax  0p  Gpp 1p  1pp 1p  1pp Dz 
+1z  2p  1x  Gp  2p  2pp Dz  1p  1x 
+1zz 2pz 1z  0pz 1z  1pz 0z  1pz 1z 
+0z  Bx  Bz  Bx  0p  Gp  0p  Dx  0x 
+0z  0x  0x  0x  0x  Gz  0x  0x  0x 
+
+PONTOK:
+H H H H H H H H X
+H H H H H H H H X
+H H V V H H H H X
+H H H H H H V H X
+H H H H V H H H X
+V V H H V H H V X
+H H H H H H H H X
+H H H H H H H H X
+X X X X X X X X X
+
+REJTVÉNY: 17 69 95

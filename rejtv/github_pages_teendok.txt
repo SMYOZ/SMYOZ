@@ -1,0 +1,81 @@
+GITHUB PAGES – TEENDŐLISTA (SMYOZ HONLAP CSOMAGHOZ)
+
+Cél
+- A jelenlegi offline (file://) honlapcsomag publikálása GitHub Pages-en, úgy hogy a fő indítóoldal és a belső linkek működjenek.
+
+1) Válaszd ki a Pages típust
+A) USER SITE
+- Repo neve kötelezően: <felhasználónév>.github.io
+- A honlap a domain gyökérben fut: https://<felhasználónév>.github.io/
+
+B) PROJECT SITE
+- Repo neve tetszőleges
+- A honlap útvonallal fut: https://<felhasználónév>.github.io/<repo-nev>/
+
+2) Dönts a publikálási forrásról (javaslat: egyszerű)
+Opció 1 (egyszerű): main branch / (repo gyökér)
+- A repo gyökerébe tegyél egy index.html-t (ez lesz a belépő)
+
+Opció 2 (rendezettebb): main branch /docs
+- A repo gyökerében maradhatnak fejlesztői fájlok
+- A /docs mappába kerül minden, a /docs/index.html lesz a belépő
+
+3) Készíts “Pages-ready” mappastruktúrát
+- Legyen egyetlen belépő: index.html (vagy /docs/index.html)
+- Másold mellé / alá:
+  - programok/
+  - rejtv/
+  - docs/
+  - képek, egyéb assetek
+
+4) Kötelező ellenőrzés: linkek és útvonalak
+- NINCS:
+  - D:\... vagy C:\... hivatkozás
+  - file:///... hivatkozás
+- MINDEN relatív:
+  - programok/SMYOZ_EXPLORER.html
+  - rejtv/rejtv.html
+  - docs/valami.pdf
+
+Megjegyzés:
+- Project Site esetén néha előjön a “base path” kérdés. A legegyszerűbb, ha a linkek mind relatívak (nem kezdődnek /-rel).
+
+5) Tegyél be .nojekyll fájlt (ajánlott)
+- Hozz létre egy üres .nojekyll fájlt ugyanoda, ahonnan a Pages szolgál:
+  - ha gyökérből: /.nojekyll
+  - ha /docs-ból: /docs/.nojekyll
+
+6) Kapcsold be a GitHub Pages-t
+Repo → Settings → Pages
+- Source: Deploy from a branch
+- Branch: main
+- Folder: /(root) vagy /docs (a 2) pont szerint)
+
+7) Ellenőrzés publikálás után
+- Nyisd meg a kapott URL-t
+- Teszteld:
+  - főoldal betölt
+  - Rejtvények – megoldások oldal betölt
+  - Programok megnyílnak (EXPLORER, GENERATOR)
+  - PDF-ek megnyílnak
+  - képek/galéria betölt
+
+8) Tipikus hibák és gyors javítások
+- 404 egy aloldalra:
+  - rossz relatív útvonal, vagy a fájl nincs feltöltve
+- Link csak helyben működik:
+  - valahol még maradt file:// vagy abszolút helyi út
+- PDF “furcsa margó”:
+  - a böngésző PDF-nézője eltér; ez nem Pages-hiba
+- TXT megnyitás:
+  - Pages-en (https) általában könnyebb, mint file:// alatt (kevesebb korlátozás)
+
+9) Javasolt minimál “publikáló” ellenőrző lista (kipipálható)
+[ ] Repo létrehozva
+[ ] Fájlok feltöltve (programok/, rejtv/, docs/)
+[ ] index.html a publikálási helyen
+[ ] .nojekyll a publikálási helyen
+[ ] Pages beállítva (branch + folder)
+[ ] Főoldal és aloldalak tesztelve
+
+Ha kéred, megadod melyik típust választod (User site / Project site, és root vs /docs), és a jelenlegi ZIP-ből készítek egy konkrét “Pages-ready” csomagot a megfelelő szerkezettel.
