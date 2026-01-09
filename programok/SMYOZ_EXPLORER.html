@@ -607,10 +607,13 @@ function bridgeWorkToSMY(){try{
 
   .ibox{width:270px; background:#ffffff; border:1px solid #cfe1ff; border-radius:8px; box-shadow:var(--shadow); padding:8px 10px; text-align:center}
   .ibox .cap{font-size:12px; color:var(--muted); margin-bottom:2px}
-  .ibox .val{font-family:"Courier New",monospace; font-weight:800; font-size:15px; min-height:1.2em}
+  .ibox .val{font-family:"Courier New",monospace; font-weight:800; font-size:16px; min-height:1.2em}
   .sumRow{width:860px; text-align:center; background:#ffffff; border:1px solid #cfe1ff; border-radius:8px; padding:6px 10px; box-shadow:var(--shadow); font-family:"Courier New",monospace; font-size:15px; font-weight:400}
   
-  .sumRow{ font-size:16px; }
+  .sumRow{ font-size:16px; white-space:nowrap; }
+  /* Ensure Lövések sor matches Vízvonalak sor typography */
+  .sumRow{font-family:"Courier New",monospace; font-size:16px; font-weight:800;}
+
   .sumRow .sum-var{ font-weight:800; }
 
   .hud-dyn{font-weight:800;}
@@ -624,7 +627,7 @@ function bridgeWorkToSMY(){try{
   button.ghost{background:#e7f0ff; color:#0b2b40}
   input[type="text"]{padding:6px 8px; border:1px solid #cbd; border-radius:8px; font-family:"Courier New",monospace; font-weight:400}
 
-  .main{display:grid; grid-template-columns: 320px 240px 1fr 360px; gap:12px; padding:12px; justify-content:center; max-width:1180px; margin:16px auto 0 auto; box-sizing:border-box}
+  .main{display:grid; grid-template-columns: 320px 240px 1fr 360px; gap:12px; padding:12px; justify-content:center; max-width:1180px; margin:-3px auto 0 auto; box-sizing:border-box}
   .card{background:#fff; border-radius:12px; box-shadow:var(--shadow); padding:12px}
   h2{margin:0 0 8px}
 
@@ -712,6 +715,37 @@ function bridgeWorkToSMY(){try{
 #homokozo_card{
   margin-left:0 !important;
 }
+
+
+/* DOKU toggle: only reorders the three top blocks; board and main layout stay unchanged */
+header{position:relative}
+.dokuToggle{position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:12px; font-weight:800;
+  background:rgba(255,255,255,.16); padding:4px 8px; border-radius:10px; cursor:pointer; user-select:none; white-space:nowrap;}
+.dokuToggle input{margin-right:6px; vertical-align:middle}
+
+#topBlocks{display:flex; flex-direction:column}
+.topwrap{display:flex; flex-direction:column}
+.topwrap .infoRow{order:1}
+.topwrap #sumRow{order:2}
+.toolbar{order:3}
+
+#topBlocks.doku-on .toolbar{order:1}
+#topBlocks.doku-on .topwrap{order:2}
+#topBlocks.doku-on .topwrap #sumRow{order:1}
+#topBlocks.doku-on .topwrap .infoRow{order:2}
+
+/* In DOKU módban: a Lövések sor és a Vízvonalak—Kikötések sor betűi legyenek teljesen azonosak (típus/méret/vastagság) */
+#topBlocks.doku-on #sumRow,
+#topBlocks.doku-on .infoRow .ibox .cap,
+#topBlocks.doku-on .infoRow .ibox .val{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--fg);
+}
+#topBlocks.doku-on .infoRow .ibox .cap{ margin-bottom:0; }
+
+
 </style>
 <script>
 
@@ -1379,7 +1413,13 @@ function auto_6b_fromShipPoints(){
 </div>
 
 <div id="placeOverlay" aria-hidden="true"></div>
-<header>SMYOZ Explorer v12.16</header>
+<header id="appHeader"><span id="hdrTitle">SMYOZ Explorer v12.16</span>
+  <label id="dokuToggleWrap" class="dokuToggle" title="DOKU fejléc elrendezés">
+    <input id="dokuToggle" type="checkbox"/>
+    DOKU
+  </label>
+</header>
+<div id="topBlocks">
 <div class="topwrap">
 <div class="infoRow">
 <div class="ibox"><div class="cap">Vízvonalak (össz / aktuális)</div><div class="val" id="vvBox">-</div></div>
@@ -1464,6 +1504,7 @@ REJTVÉNY:
 <div id="autoRows"></div>
 </div>
 </div>
+</div><!-- /topBlocks -->
 <div class="main">
 <div class="card" style="width:160px;min-width:130px;max-width:170px;margin-left:80mm">
 <h2>HAJÓK</h2>
@@ -3879,7 +3920,7 @@ document.addEventListener('DOMContentLoaded', function(){
 <script>
 (function(){
   document.title = "SMYOZ Explorer v12.16" ;
-  { var _h = document.querySelector('header'); if(_h){ _h.textContent = "SMYOZ Explorer v12.16" ; } }
+  { var _h = document.getElementById('hdrTitle'); if(_h){ _h.textContent = "SMYOZ Explorer v12.16" ; } }
 
   function setupHomokozoMuhely(){
     var HK = document.getElementById('homokozo_panel');
@@ -4793,12 +4834,34 @@ var __orig_fn_action = window.fn_action;
     }
   }
 
-  function bumpTitle(){
-    document.title = "SMYOZ Explorer v12.16"   ;
-    var h=document.querySelector('header'); if(h) h.textContent='SMYOZ Explorer v12.16' ;
+  
+  
+  function setupDokuToggle(){
+    var cb = document.getElementById('dokuToggle');
+    if(!cb) return;
+
+    var key = 'SMYOZ_DOKU_MODE';
+    var p = (new URLSearchParams(window.location.search)).get('doku');
+    var on = (p === '1') ? true : (p === '0') ? false : ((localStorage.getItem(key) === '1') || (String(window.location.hash || '').toLowerCase().indexOf('doku') >= 0));
+
+    cb.checked = !!on;
+    var topBlocks = document.getElementById('topBlocks');
+    if(topBlocks){ topBlocks.classList.toggle('doku-on', cb.checked); }
+
+    cb.addEventListener('change', function(){
+      var topBlocks = document.getElementById('topBlocks');
+    if(topBlocks){ topBlocks.classList.toggle('doku-on', cb.checked); }
+      localStorage.setItem(key, cb.checked ? '1' : '0');
+    });
   }
 
-  function init(){ hookRows(); drawMuhely(); bumpTitle(); }
+
+  function bumpTitle(){
+    document.title = "SMYOZ Explorer v12.16"   ;
+    var h=document.getElementById('hdrTitle'); if(h) h.textContent='SMYOZ Explorer v12.16' ;
+  }
+
+  function init(){ hookRows(); drawMuhely(); setupDokuToggle(); bumpTitle(); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 </script>
