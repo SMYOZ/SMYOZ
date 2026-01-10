@@ -2662,10 +2662,14 @@ function updateStatsHud(){
   const e = (typeof elhelyezesek !== 'undefined') ? elhelyezesek : 0;
   const solved = countSolvedCells();
 
+  // Fontos: a '|' elválasztókhoz <span class="sumSep"> kell, különben a DOKU fejlécben beállított 3.5mm "légrés" eltűnik,
+  // amikor a sor innerHTML-je frissül.
   const text =
     `Lövések: <span class="hud-dyn">${s}</span>` +
-    ` | ELHELYEZések: <span class="hud-dyn">${e}</span>` +
-    ` | Megfejtett: <span class="hud-dyn">${solved}</span>/77`;
+    `<span class="sumSep">|</span>` +
+    `ELHELYEZések: <span class="hud-dyn">${e}</span>` +
+    `<span class="sumSep">|</span>` +
+    `Megfejtett: <span class="hud-dyn">${solved}</span>/77`;
 
   const el = document.getElementById('sumRow');
   if (el) el.innerHTML = text;
