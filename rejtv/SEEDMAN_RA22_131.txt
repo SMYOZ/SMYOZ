@@ -32,8 +32,4 @@ V H H V H H H H X
 X X X X X X X X X
 
 REJTVÉNY: 
-23(O: 1z; AL1z DEz 2/2)
-Z:39:0
-
-
-hiba 18 21 aut
+45 52 74 Z:14
