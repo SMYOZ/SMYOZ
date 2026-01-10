@@ -126,8 +126,8 @@ window.SMYOZ_REJTV = {
       "folder": "RA_22_131_megoldasa",
       "files": [
         {
-          "href": "RA_22_131_megoldasa/RA_22_131_megoldasa.pdf",
-          "label": "RA_22_131_megoldasa.pdf",
+          "href": "RA_22_131_megoldasa/RA_22_131_GPT_megoldasa.pdf",
+          "label": "RA_22_131_GPT_megoldasa.pdf",
           "kind": "pdf"
         }
       ],
