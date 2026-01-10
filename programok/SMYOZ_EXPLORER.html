@@ -744,6 +744,46 @@ header{position:relative}
 }
 
 
+
+/* === DOKU fejléc szélesség/pozíció: igazítás HAJÓK + TÁBLA(+index) fölé, kilógás tiltása === */
+#topBlocks.doku-on{
+  --topShipBoardW: 740px;          /* kb. HAJÓK (160) + gap + TÁBLA(+index) */
+  --topShipBoardShiftX: calc(-18px - 25mm);     /* finom balra tolás, hogy a jobb oldali kilógás megszűnjön */
+}
+#topBlocks.doku-on .topwrap{
+  transform: none;
+}
+#topBlocks.doku-on .topwrap .infoRow,
+#topBlocks.doku-on .topwrap #sumRow{
+  width: var(--topShipBoardW);
+  max-width: calc(100vw - 24px);
+  transform: translateX(var(--topShipBoardShiftX));
+}
+#topBlocks.doku-on .topwrap .infoRow{
+  justify-content: space-between;
+  gap: 10px;
+}
+#topBlocks.doku-on .topwrap .infoRow .ibox{
+  width: auto;
+  flex: 1 1 0;
+}
+#topBlocks.doku-on .topwrap .infoRow .iboxSmall{
+  flex: 0 0 140px; /* itt elég max ~4 karakter a cím alatt */
+}
+#topBlocks.doku-on .topwrap .infoRow .ibox .cap{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#topBlocks.doku-on .topwrap #sumRow{
+  padding-left: 14px;
+  padding-right: 14px;
+}
+#topBlocks.doku-on #sumRow .sumSep{
+  display:inline-block;
+  margin: 0 3.5mm;
+}
+
 </style>
 <script>
 
@@ -1420,12 +1460,12 @@ function auto_6b_fromShipPoints(){
 <div id="topBlocks">
 <div class="topwrap">
 <div class="infoRow">
-<div class="ibox"><div class="cap">Vízvonalak (össz / aktuális)</div><div class="val" id="vvBox">-</div></div>
+<div class="ibox iboxSmall"><div class="cap">Vízvonalak</div><div class="val" id="vvBox">-</div></div>
 <div class="ibox"><div class="cap">Szigetek (méretek növekvő sorrendben)</div><div class="val" id="szigBox">-</div></div>
 <div class="ibox"><div class="cap">Szigetek (LELTÁR)</div><div class="val" id="szigOrigBox">-</div></div>
-<div class="ibox"><div class="cap">Kikötések (össz / aktuális)</div><div class="val" id="khBox">-</div></div>
+<div class="ibox iboxSmall"><div class="cap">Kikötések</div><div class="val" id="khBox">-</div></div>
 </div>
-<div class="sumRow" id="sumRow">Lövések: <span class="hud-dyn">0</span> | ELHELYEZések: <span class="hud-dyn">0</span> | Megfejtett: <span class="hud-dyn">0</span>/77</div>
+<div class="sumRow" id="sumRow">Lövések: <span class="hud-dyn">0</span><span class="sumSep">|</span>ELHELYEZések: <span class="hud-dyn">0</span><span class="sumSep">|</span>Megfejtett: <span class="hud-dyn">0</span>/77</div>
 </div>
 <div class="toolbar">
 <div class="group">
