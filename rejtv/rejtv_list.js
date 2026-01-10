@@ -7,13 +7,13 @@ window.SMYOZ_REJTV = {
   "generated": "2026-01-01",
   "rootFiles": [
     {
-      "href": "MEGOLD_SOK_kozos.pdf",
-      "label": "MEGOLDASOK_kozos.pdf",
+      "href": "MEGOLDASOK_kozos.pdf",
+      "label": "MEGOLDÁSOK kozos.pdf",
       "kind": "pdf"
     },
     {
       "href": "SMYOZ_EGYSZER_SEED.xlsx",
-      "label": "SMYOZ_EGYSZERU_SEED.xlsx",
+      "label": "SMYOZ_EGYSZERÜ SEED.xlsx",
       "kind": "xlsx"
     }
   ],

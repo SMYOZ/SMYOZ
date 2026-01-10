@@ -97,10 +97,29 @@ body.theme-mint{
     }
 
     header {
+      position: relative;
       padding: 18px 18px 22px; border: 1px solid var(--line); background: rgba(255,255,255,0.04);
       border-radius: 18px; box-shadow: var(--shadow);
     }
-    h1 { margin: 0 0 8px; font-size: 26px; letter-spacing: 0.3px; }
+    h1 { margin: 0; font-size: 26px; letter-spacing: 0.3px; }
+
+    .hdrline{
+      position: relative;
+      margin: 0 0 8px;
+    }
+    .hdrline h1 { margin: 0; }
+    #smyoz_ship_stamp{
+      position: absolute;
+      top: -2px;
+      right: 0;
+      width: clamp(250px, 10cm, 300px);
+      height: auto;
+      display:block;
+      opacity: 0.95;
+      pointer-events: none; /* ne akadályozza a gombokat */
+      user-select: none;
+      -webkit-user-drag: none;
+    }
     .sub { margin:0; color: var(--muted); line-height: 1.4; }
     .grid { display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     @media (min-width: 880px) {
@@ -395,7 +414,10 @@ body.theme-mint{
 <body>
 <div class="wrap">
 <header>
-<h1>SMYOZ</h1>
+<div class="hdrline">
+  <h1>SMYOZ</h1>
+  <img id="smyoz_ship_stamp" src="smyoz_hajo.jpg" alt="">
+</div>
 <div class="top-controls">
    <button class="chip" id="btnTheme" type="button" aria-pressed="false">Környezet: Alap</button>
   <!-- SMYOZ: A "Környezet" gomb a honlap kinézetét váltja. -->
