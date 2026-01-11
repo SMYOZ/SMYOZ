@@ -133,40 +133,40 @@ window.SMYOZ_REJTV = {
       ],
       "gallery": [
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_1.jpg",
-          "caption": "Screenshot_RA22_131_1.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_1.jpg",
+          "caption": "RA22_131_1.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_2.jpg",
-          "caption": "Screenshot_RA22_131_2.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_2.jpg",
+          "caption": "RA22_131_2.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_3.jpg",
-          "caption": "Screenshot_RA22_131_3.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_3.jpg",
+          "caption": "RA22_131_3.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_4.jpg",
-          "caption": "Screenshot_RA22_131_4.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_4.jpg",
+          "caption": "RA22_131_4.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_5.jpg",
-          "caption": "Screenshot_RA22_131_5.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_5.jpg",
+          "caption": "RA22_131_5.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_6.jpg",
-          "caption": "Screenshot_RA22_131_6.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_6.jpg",
+          "caption": "RA22_131_6.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_7.jpg",
-          "caption": "Screenshot_RA22_131_7.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_7.jpg",
+          "caption": "RA22_131_7.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_8.jpg",
-          "caption": "Screenshot_RA22_131_8.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_8.jpg",
+          "caption": "RA22_131_8.jpg"
         },
         {
-          "src": "RA_22_131_megoldasa/Screenshot_RA22_131_9.jpg",
-          "caption": "Screenshot_RA22_131_9.jpg"
+          "src": "RA_22_131_megoldasa/RA22_131_9.jpg",
+          "caption": "RA22_131_9.jpg"
         }
       ]
     },
