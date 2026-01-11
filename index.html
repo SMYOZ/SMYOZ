@@ -409,6 +409,26 @@ body.theme-mint{
       filter: brightness(0.85) contrast(0.85) saturate(0.95);
       opacity: 0.85;
     }
+
+    /* --- SMYOZ: Cikkek panel tömörítés (ne nőjön magasabbra, mint a többi kártya) --- */
+    .card-cikkek .btnrow{
+      margin-top: 0;      /* a globális .btnrow 8px marginját itt lenullázzuk */
+      gap: 6px;           /* sortáv a Cikkekben */
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+    }
+    .card-cikkek .btncol{
+      align-items: stretch;
+    }
+    .card-cikkek .btn{
+      margin-top: 0;      /* a globális .btn 8px marginját itt lenullázzuk */
+      padding: 6px 10px;  /* gombmagasság */
+      line-height: 1.15;
+      font-size: 14px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
 </style>
 </head>
 <body>
@@ -416,7 +436,7 @@ body.theme-mint{
 <header>
 <div class="hdrline">
   <h1>SMYOZ</h1>
-  <img id="smyoz_ship_stamp" src="./smyoz_hajo.jpg" alt=""> 
+  <img id="smyoz_ship_stamp" src="smyoz_hajo.jpg" alt="">
 </div>
 <div class="top-controls">
    <button class="chip" id="btnTheme" type="button" aria-pressed="false">Környezet: Alap</button>
@@ -445,11 +465,12 @@ body.theme-mint{
 <li><a class="" data-title="SMYOZ leírás (papíralap)" href="docs/SMYOZ_leiras_papiralap.pdf">SMYOZ leírás (papíralap)</a></li>
 </ul>
 </section>
-<section class="card">
+<section class="card card-cikkek">
 <h2>Cikkek</h2>
 <div class="btncol btnrow">
 <a class="btn" data-title="Hennyey Judit: SMYOZ – A matematika tanítása (1983)" href="docs/HennyeyJuditSmyoz_A_matematika_tanitasa_1983_XXX_evf_5_6.pdf">Hennyey Judit (1983)</a>
 <a class="btn" data-title="Szilágyi: SMYOZ – Journal of Recreational Mathematics (2006)" href="docs/Szilagyi_SMYOZ_Journal_of_Recreational_Mathematics_Vol_35_No_1_2006.pdf">Szilágyi Miklós (2006)</a>
+<a class="btn" data-title="SMYOZ kombinatorika" href="docs/SMYOZ_kombinatorika.pdf">Hányan vannak?  --  SMYOZ kombinatorika</a>
 </div>
 </section>
 
