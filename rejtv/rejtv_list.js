@@ -523,6 +523,48 @@ window.SMYOZ_REJTV = {
           "caption": "SEED_314159_5.jpg"
         }
       ]
+    },
+	{
+      "title": "SEED-790904 megoldása",
+      "folder": "SEED_790904_megoldasa",
+      "files": [
+        {
+          "href": "SEED_790904_megoldasa/SEED_790904.txt",
+          "label": "SEED_790904.txt",
+          "kind": "txt"
+        },
+        {
+          "href": "SEED_790904_megoldasa/SEED_790904_megoldasa.pdf",
+          "label": "SEED_790904_megoldasa.pdf",
+          "kind": "pdf"
+        }
+      ],
+      "gallery": [
+        {
+          "src": "SEED_790904_megoldasa/SEED_790904_1.jpg",
+          "caption": "SEED_790904_1.jpg"
+        },
+        {
+          "src": "SEED_790904_megoldasa/SEED_790904_2.jpg",
+          "caption": "SEED_790904_2.jpg"
+        },
+         {
+          "src": "SEED_790904_megoldasa/SEED_790904_3.jpg",
+          "caption": "SEED_790904_3.jpg"
+        },
+         {
+          "src": "SEED_790904_megoldasa/SEED_790904_4.jpg",
+          "caption": "SEED_790904_4.jpg"
+        },
+        {
+          "src": "SEED_790904_megoldasa/SEED_790904_5.jpg",
+          "caption": "SEED_790904_5.jpg"
+        },
+		{
+          "src": "SEED_790904_megoldasa/SEED_790904_6.jpg",
+          "caption": "SEED_790904_6.jpg"
+        }
+      ]
     }
   ]
 };
