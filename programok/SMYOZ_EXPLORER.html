@@ -5474,8 +5474,31 @@ window.__MANUAL_WRITE__ = __oldManual;
     var elvet = ensureElvetBtn();
 	// if(elvet) console.log('STATE NEXT '+next+' ELVET=TRUE')   // RA log 
 
+    function setBtnStyle(btn, bg, border, color){
+      if(!btn) return;
+      btn.style.background = bg;
+      btn.style.border = border;
+      btn.style.color = color;
+    }
+    function applyPhaseStyles(phase){
+      if (phase===0){
+        // EREDETI kék (telített)
+        setBtnStyle(placeBtn, '#1976d2', '1px solid #115293', '#ffffff'); // ELHELYEZ: kék
+        setBtnStyle(elvet,   '#1976d2', '1px solid #115293', '#ffffff'); // FOLYTAT/ELVET: kék
+      } else if (phase===1){
+        // Telített narancs / okker
+        setBtnStyle(placeBtn, '#ef6c00', '1px solid #b53d00', '#ffffff'); // ELHELYEZ: narancs
+        setBtnStyle(elvet,   '#b88700', '1px solid #7a5a00', '#ffffff'); // ELVET: okker
+      } else {
+        // Telített zöld / EREDETI piros (telített)
+        setBtnStyle(placeBtn, '#22c55e', '1px solid #15803d', '#ffffff'); // ELHELYEZ: zöld (mint BETÖLTÉS / AUTOMATIZMUSOK)
+        setBtnStyle(elvet,   '#c62828', '1px solid #8e0000', '#ffffff'); // ELVET: piros
+      }
+    }
     var ov = document.getElementById('placeOverlay'); if(ov) ov.style.display = 'none';
 	 
+    applyPhaseStyles(next);
+
     if(next===0)
 	{
       clearRings();
@@ -5484,25 +5507,13 @@ window.__MANUAL_WRITE__ = __oldManual;
         elhelyezesek++;
         if (typeof updateStatsHud === 'function') updateStatsHud();
       }
-      if (placeBtn)
-	  {
-		placeBtn.style.background = '';
-		placeBtn.style.border = '';
-		placeBtn.style.color = '';
-	  }
-      if(elvet){ elvet.style.display=''; elvet.textContent='FOLYTAT'; }
+            if(elvet){ elvet.style.display=''; elvet.textContent='FOLYTAT'; }
       if (reason === 'ELVET' && vanMENTES) VISSZATOLTES();
 
     } 
 	else if(next===1)
 	{
-      if (placeBtn)
-	  {
-		placeBtn.style.background = '';
-		placeBtn.style.border = '';
-		placeBtn.style.color = '';
-	  }
-      if(elvet){ elvet.style.display=''; elvet.textContent=' ELVET '; }
+            if(elvet){ elvet.style.display=''; elvet.textContent=' ELVET '; }
       drawRingFromCurrentIndex();
 
     } 
@@ -5526,39 +5537,11 @@ window.__MANUAL_WRITE__ = __oldManual;
 		
 		if (CompOK && MuhelyOK)
 		{
-		   
-		   if (placeBtn)
-		   {
-		     placeBtn.style.background = '#00c853';
-		     placeBtn.style.border = '2px solid #00a844';
-		     placeBtn.style.color = '#ffffff';
-		   }
-		   if (elvet)
-		   {
-		     
-		     elvet.style.background = '#616161';
-		     elvet.style.border = '1px solid #424242';
-		     elvet.style.color = '#f5f5f5';
-		   }
-		   drawRingAt(r,c,'green');
+		  drawRingAt(r,c,'green');
 		}
 		else
 		{
-		   
-		   if (placeBtn)
-		   {
-		     placeBtn.style.background = '#d50000';
-		     placeBtn.style.border = '2px solid #b71c1c';
-		     placeBtn.style.color = '#ffffff';
-		   }
-		   if (elvet)
-		   {
-		     
-		     elvet.style.background = '#00c853';
-		     elvet.style.border = '2px solid #00a844';
-		     elvet.style.color = '#ffffff';
-		   }
-		   drawRingAt(r,c,'red');
+		  drawRingAt(r,c,'red');
 		}
 	  }  
     }
@@ -10060,18 +10043,34 @@ window.auto_12a_color_between_differents  = function auto_12a_color_between_diff
   if (typeof FOLYTATAS === 'undefined') { FOLYTATAS = false; }
 
   function $(id){ return document.getElementById(id); }
-  function labelGreen(btn, on){
+  function phaseOfHomokozo(){
+    var st = (typeof window!=='undefined' && typeof window.__elh_state__==='number') ? window.__elh_state__ : 0;
+    if (st < 0 || st > 2) st = 0;
+    return st;
+  }
+  function styleToggleByPhase(btn){
     if(!btn) return;
-    btn.style.background = on ? '#eaffea' : '#eee';
-    btn.style.border = on ? '1px solid #9bd49b' : '1px solid #cfcfcf';
-    btn.style.color = on ? '#0a6d0a' : '#444';
+    var st = phaseOfHomokozo();
+    if (st===0){
+      btn.style.background = '#e6f0ff';
+      btn.style.border = '1px solid #7aa7ff';
+      btn.style.color = '#0b3d91';
+    } else if (st===1){
+      btn.style.background = '#fff5cc';
+      btn.style.border = '1px solid #d4b84a';
+      btn.style.color = '#5a4700';
+    } else {
+      btn.style.background = '#ffeeee';
+      btn.style.border = '1px solid #ffd1d1';
+      btn.style.color = '#b3261e';
+    }
   }
   function setLabel(btn, txt){
     if(!btn) return;
     btn.textContent = txt;
-    
-    labelGreen(btn, txt==='FOLYTAT');
+    styleToggleByPhase(btn);
   }
+
   function homokozoRoot(){
     return $('homokozo_panel') || document.body;
   }

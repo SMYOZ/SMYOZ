@@ -271,14 +271,14 @@ body.theme-mint{
     .vw-box.wide { width: min(1700px, 98vw); height: min(900px, 92vh); }
     
     /* VW TXT mód: nagyítás iframe-en (file:// alatt nincs fetch) */
-    .vw-box.txtmode { width: min(1400px, 98vw); height: min(900px, 92vh); }
+    .vw-box.txtmode { width: min(1320px, 96vw); height: min(900px, 92vh); }
     .vw-box.txtmode .vw-body{ background: var(--smy-brown); }
     .vw-box.txtmode iframe{
       background: var(--smy-brown);
       transform-origin: 0 0;
-      transform: scale(1.5);
-      width: calc(100% / 1.5);
-      height: calc(100% / 1.5);
+      transform: scale(1.4);
+      width: calc(100% / 1.4);
+      height: calc(100% / 1.4);
     }
 .vw-top {
       display:flex; align-items:center; justify-content: space-between;
@@ -364,7 +364,7 @@ body.theme-mint{
   overflow: auto;
   white-space: pre-wrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.35;
   background: rgba(0,0,0,0.78);
   color: rgba(255,255,255,0.92);
@@ -872,7 +872,7 @@ window.addEventListener('message', (ev) => {
   } catch(e) {}
 });
 
-vw.addEventListener('click', (e) => { if (e.target === vw) closeVW(); });
+// SMYOZ: háttér-kattintás = NEM vissza (csak a VISSZA gomb és az Esc zár)
 
     document.addEventListener('keydown', (e) => {
       if (!vw.classList.contains('on')) return;

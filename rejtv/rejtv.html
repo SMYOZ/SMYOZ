@@ -251,16 +251,16 @@ details.acc[open] .filelist{
 #vw2.txtmode #vw2Stage{
   /* 20mm körüli belső barna keret */
   box-sizing: border-box;
-  padding: 20mm;
+  padding: 18mm;
   background:/* #fff ; */ var(--smy-brown); /* csak a keret; maga a háttér a #vw2 */
 }
 #vw2.txtmode #vw2Frame{
   background:  #fff ; /* var(--smy-brown);
   /* kb. +50% olvashatóság (Firefox kompatibilis) */
   transform-origin: 0 0;
-  transform: scale(1.5);
-  width: calc(100% / 1.5);
-  height: calc(100% / 1.5);
+  transform: scale(1.4);
+  width: calc(100% / 1.4);
+  height: calc(100% / 1.4);
 }
 </style>
 
@@ -623,7 +623,7 @@ function SMYOZ_goHome(ev){
     if (isTxt) {
       // TXT: ne split nézet (ami üres fehér területet okoz), hanem egyetlen iframe, nagyítva
       vw.classList.add('txtmode');
-      setStageSize(1400, 900);
+      setStageSize(660, 900);
       split.classList.remove('on');
       fr.style.display = 'block';
       fr.src = 'about:blank';
@@ -640,10 +640,7 @@ function SMYOZ_goHome(ev){
     return false;
   };
 
-  // barna háttérre kattintás = vissza
-  vw.addEventListener('click', function(ev){
-    if (ev.target === vw) closeVW2();
-  });
+  // SMYOZ: háttér-kattintás = NEM vissza (csak a VISSZA gomb és az Esc zár)
   back.addEventListener('click', closeVW2);
   document.addEventListener('keydown', function(e){
     if (!vw.classList.contains('on')) return;
