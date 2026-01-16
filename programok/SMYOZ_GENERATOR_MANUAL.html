@@ -171,6 +171,21 @@
   }
   button.failflash{ animation:failBtnFlash 2500ms ease-out 1; }
 
+  /* SEEDMAN betöltött fájlnév (csak betöltés után jelenik meg) */
+  .loadSeedName{
+    margin-left:8px;
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:260px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+
+
   @keyframes ruleFlash{
     0%{ outline:6px solid transparent; filter:brightness(1); }
     10%{ outline:6px solid var(--red); filter:brightness(1.25); }
@@ -479,6 +494,7 @@ pre{
     <button id="toggleLabels">Jelek be/ki</button>
     <button id="saveSeed">SEEDMAN.txt mentés</button>
     <button id="loadSeed">SEEDMAN betöltés</button>
+    <span id="loadSeedName" class="loadSeedName"></span>
     <input id="loadFile" type="file" accept=".txt,text/plain" style="display:none" />
   </div>
 </div>
@@ -609,6 +625,18 @@ pre{
   const toggleLabelsBtn = document.getElementById("toggleLabels");
   const saveSeedBtn     = document.getElementById("saveSeed");
   const loadSeedBtn     = document.getElementById("loadSeed");
+  const loadSeedNameSpan = document.getElementById("loadSeedName");
+
+  // betöltött SEEDMAN fájlnév (TÖRLÉS nem törli; csak következő betöltés írja felül)
+  let loadedSeedmanName = "";
+
+  function setLoadedSeedmanName(name){
+    loadedSeedmanName = String(name || "");
+    if(loadSeedNameSpan){
+      loadSeedNameSpan.textContent = loadedSeedmanName;
+    }
+  }
+
   const loadFileInput   = document.getElementById("loadFile");
   const doneBtn         = document.getElementById("btnDone");
   const fullClearBtn    = document.getElementById("btnFullClear");
@@ -2649,6 +2677,9 @@ function updateDerived(){
 
 
   function initUI(){
+    // kezdetben nincs betöltött fájlnév kiírva
+    setLoadedSeedmanName(loadedSeedmanName);
+
     initGrid();
     initShipButtons();
     initRuleToggles();
@@ -2698,6 +2729,9 @@ function updateDerived(){
     loadFileInput.addEventListener("change", function(){
       const f = loadFileInput.files && loadFileInput.files[0];
       if(!f) return;
+
+      // a kiválasztott fájl neve azonnal megjelenik (akkor is, ha a tartalom hibás)
+      setLoadedSeedmanName(f.name);
       const fr = new FileReader();
       fr.onload = function(){
         loadFromSeedText(String(fr.result || ""));
