@@ -487,40 +487,28 @@ window.SMYOZ_REJTV = {
           "caption": "SEED_314159_1.jpg"
         },
         {
-          "src": "SEED_314159_megoldasa/SEED_314159_2.jpg",
-          "caption": "SEED_314159_2.jpg"
-        },
-        {
-          "src": "SEED_314159_megoldasa/SEED_314159_21.jpg",
-          "caption": "SEED_314159_21.jpg"
-        },
-        {
           "src": "SEED_314159_megoldasa/SEED_314159_3.jpg",
           "caption": "SEED_314159_3.jpg"
-        },
-        {
-          "src": "SEED_314159_megoldasa/SEED_314159_31.jpg",
-          "caption": "SEED_314159_31.jpg"
         },
         {
           "src": "SEED_314159_megoldasa/SEED_314159_4.jpg",
           "caption": "SEED_314159_4.jpg"
         },
         {
-          "src": "SEED_314159_megoldasa/SEED_314159_41.jpg",
-          "caption": "SEED_314159_41.jpg"
-        },
-        {
-          "src": "SEED_314159_megoldasa/SEED_314159_42.jpg",
-          "caption": "SEED_314159_42.jpg"
-        },
-        {
-          "src": "SEED_314159_megoldasa/SEED_314159_43.jpg",
-          "caption": "SEED_314159_43.jpg"
-        },
-        {
           "src": "SEED_314159_megoldasa/SEED_314159_5.jpg",
           "caption": "SEED_314159_5.jpg"
+        },
+        {
+          "src": "SEED_314159_megoldasa/SEED_314159_6.jpg",
+          "caption": "SEED_314159_6.jpg"
+        },
+        {
+          "src": "SEED_314159_megoldasa/SEED_314159_7.jpg",
+          "caption": "SEED_314159_7.jpg"
+        },
+        {
+          "src": "SEED_314159_megoldasa/SEED_314159_8.jpg",
+          "caption": "SEED_314159_8.jpg"
         }
       ]
     },
