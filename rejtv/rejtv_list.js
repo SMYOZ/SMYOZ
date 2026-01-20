@@ -38,7 +38,32 @@ window.SMYOZ_REJTV = {
           "kind": "txt"
         }
       ],
-      "gallery": []
+      "gallery": [
+	  	{
+          "src": "RA_22_110_megoldasa/RA22_110_1.jpg",
+          "caption": "RA22_110_1.jpg"
+        },
+		{
+          "src": "RA_22_110_megoldasa/RA22_110_2.jpg",
+          "caption": "RA22_110_2.jpg"
+        },
+	  	{
+          "src": "RA_22_110_megoldasa/RA22_110_3.jpg",
+          "caption": "RA22_110_3.jpg"
+        },
+	  	{
+          "src": "RA_22_110_megoldasa/RA22_110_4.jpg",
+          "caption": "RA22_110_4.jpg"
+        },
+	  	{
+          "src": "RA_22_110_megoldasa/RA22_110_5.jpg",
+          "caption": "RA22_110_5.jpg"
+        },
+	  	{
+          "src": "RA_22_110_megoldasa/RA22_110_8.jpg",
+          "caption": "RA22_110_8.jpg"
+        }		
+	  ]
     },
     {
       "title": "RA 22-123 megoldása",
@@ -167,6 +192,18 @@ window.SMYOZ_REJTV = {
         {
           "src": "RA_22_131_megoldasa/RA22_131_9.jpg",
           "caption": "RA22_131_9.jpg"
+        },
+        {
+          "src": "RA_22_131_megoldasa/RA22_131_10.jpg",
+          "caption": "RA22_131_10.jpg"
+        },
+        {
+          "src": "RA_22_131_megoldasa/RA22_131_11.jpg",
+          "caption": "RA22_131_11.jpg"
+        },
+        {
+          "src": "RA_22_131_megoldasa/RA22_131_12.jpg",
+          "caption": "RA22_131_12.jpg"
         }
       ]
     },
@@ -200,7 +237,49 @@ window.SMYOZ_REJTV = {
           "kind": "txt"
         }
       ],
-      "gallery": []
+      "gallery": 
+	  [
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_11.jpg",
+          "caption": "RA22_132_11.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_12.jpg",
+          "caption": "RA22_132_12.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_13.jpg",
+          "caption": "RA22_132_13.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_14.jpg",
+          "caption": "RA22_132_14.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_15.jpg",
+          "caption": "RA22_132_15.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_16.jpg",
+          "caption": "RA22_132_16.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_17.jpg",
+          "caption": "RA22_132_17.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_21.jpg",
+          "caption": "RA22_132_21.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_22.jpg",
+          "caption": "RA22_132_22.jpg"
+        },
+ 	    {
+          "src": "RA_22_132_megoldasa/RA22_132_23.jpg",
+          "caption": "RA22_132_23.jpg"
+        }
+	  ]
     },
     {
       "title": "RA 22-142 megoldása",
@@ -264,7 +343,40 @@ window.SMYOZ_REJTV = {
           "kind": "txt"
         }
       ],
-      "gallery": []
+      "gallery": [
+        {
+          "src": "RA_22_28_megoldasa/RA22_28_0.jpg",
+          "caption": "RA22_28_0.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_1.jpg",
+          "caption": "RA22_28_1.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_2.jpg",
+          "caption": "RA22_28_2.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_3.jpg",
+          "caption": "RA22_28_3.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_4.jpg",
+          "caption": "RA22_28_4.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_5.jpg",
+          "caption": "RA22_28_5.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_6.jpg",
+          "caption": "RA22_28_6.jpg"
+        },
+		{
+          "src": "RA_22_28_megoldasa/RA22_28_7.jpg",
+          "caption": "RA22_28_7.jpg"
+        }
+	  ]
     },
     {
       "title": "SEED-11 megoldása",
@@ -280,10 +392,6 @@ window.SMYOZ_REJTV = {
         {
           "src": "SEED_11_megoldasa/SEED_11_1.jpg",
           "caption": "SEED_11_1.jpg"
-        },
-        {
-          "src": "SEED_11_megoldasa/SEED_11_10.jpg",
-          "caption": "SEED_11_10.jpg"
         },
         {
           "src": "SEED_11_megoldasa/SEED_11_2.jpg",
@@ -316,6 +424,10 @@ window.SMYOZ_REJTV = {
         {
           "src": "SEED_11_megoldasa/SEED_11_9.jpg",
           "caption": "SEED_11_9.jpg"
+        },
+        {
+          "src": "SEED_11_megoldasa/SEED_11_10.jpg",
+          "caption": "SEED_11_10.jpg"
         }
       ]
     },
@@ -324,6 +436,11 @@ window.SMYOZ_REJTV = {
       "folder": "SEED_225314_megoldasa",
       "files": [
         {
+          "href": "SEED_225314_megoldasa/SEED_225314_megoldasa.pdf",
+          "label": "SEED_225314_megoldasa.pdf",
+          "kind": "pdf"
+        },
+		{
           "href": "SEED_225314_megoldasa/SEED_225314.txt",
           "label": "SEED_225314.txt",
           "kind": "txt"
@@ -337,6 +454,14 @@ window.SMYOZ_REJTV = {
         {
           "src": "SEED_225314_megoldasa/SEED_225314_2.jpg",
           "caption": "SEED_225314_2.jpg"
+        },
+        {
+          "src": "SEED_225314_megoldasa/SEED_225314_3.jpg",
+          "caption": "SEED_225314_3.jpg"
+        },
+        {
+          "src": "SEED_225314_megoldasa/SEED_225314_4.jpg",
+          "caption": "SEED_225314_4.jpg"
         },
         {
           "src": "SEED_225314_megoldasa/SEED_225314_21.jpg",
@@ -369,14 +494,6 @@ window.SMYOZ_REJTV = {
         {
           "src": "SEED_225314_megoldasa/SEED_225314_28.jpg",
           "caption": "SEED_225314_28.jpg"
-        },
-        {
-          "src": "SEED_225314_megoldasa/SEED_225314_3.jpg",
-          "caption": "SEED_225314_3.jpg"
-        },
-        {
-          "src": "SEED_225314_megoldasa/SEED_225314_4.jpg",
-          "caption": "SEED_225314_4.jpg"
         }
       ]
     },
@@ -384,6 +501,11 @@ window.SMYOZ_REJTV = {
       "title": "SEED 251231 megoldása",
       "folder": "SEED_251231_Megoldasa",
       "files": [
+        {
+          "href": "SEED_251231_Megoldasa/SEED_251231_megoldasa.pdf",
+          "label": "SEED_251231_megoldasa.pdf",
+          "kind": "pdf"
+        },	  
         {
           "href": "SEED_251231_Megoldasa/SEED_251231.txt",
           "label": "SEED_251231.txt",
@@ -429,17 +551,18 @@ window.SMYOZ_REJTV = {
       "title": "SEED 254128 megoldása",
       "folder": "SEED_254128_Megoldasa",
       "files": [
-        {
+	    {
           "href": "SEED_254128_Megoldasa/SEED_254128.txt",
           "label": "SEED_254128.txt",
           "kind": "txt"
+        },
+        {
+          "href": "SEED_254128_Megoldasa/SEED_254128_megoldasa.pdf",
+          "label": "SEED_254128_megoldasa.pdf",
+          "kind": "pdf"
         }
       ],
       "gallery": [
-        {
-          "src": "SEED_254128_Megoldasa/SEED_225314_1.jpg",
-          "caption": "SEED_225314_1.jpg"
-        },
         {
           "src": "SEED_254128_Megoldasa/SEED_254128_1.jpg",
           "caption": "SEED_254128_1.jpg"
