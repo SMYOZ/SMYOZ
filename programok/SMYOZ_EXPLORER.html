@@ -4433,8 +4433,11 @@ var __orig_fn_action = window.fn_action;
 
 (function(){
   if (typeof window._muhelyCrossActive === 'undefined') window._muhelyCrossActive = false;
+  // HUD debug overlay (default OFF). Set window.SMY_DEBUG_HUD=true in console to enable.
+  if (typeof window.SMY_DEBUG_HUD === 'undefined') window.SMY_DEBUG_HUD = false;
 
   function ensureHUD(){
+    if(!window.SMY_DEBUG_HUD) return null;
     var hud = document.getElementById('muhely_debug_hud');
     if(!hud){
       hud = document.createElement('div');
@@ -8385,8 +8388,14 @@ function redrawSimpleStrict(){
         // és a két belső mező még nem ellentmondásos (csak '-' vagy 'H'),
         // akkor ez ugyanazon ALFA hajó lehet → ne tekintsük "távoli hajóknak".
         function isSameAlfaCandidateRow(r,c1,c2){
+          // Kivétel: ha két végpont között pontosan 2 belső mező van (x _ _ y),
+          // és x/y ∈ {A,H}, a belső két mező pedig csak '-' vagy 'H',
+          // akkor ez nagyon valószínűleg ugyanazon (még nem véglegített) ALFA hajó → ne tekintsük "távoli hajóknak".
+          // Ez kezeli a H--H és H--A (A--H) eseteket is.
           if ((c2 - c1) !== 3) return false;
-          if (typeAt(r,c1) !== 'A' || typeAt(r,c2) !== 'A') return false;
+          var tL = typeAt(r,c1), tR = typeAt(r,c2);
+          var endOK = (tL==='A' || tL==='H') && (tR==='A' || tR==='H');
+          if (!endOK) return false;
           for (var cc=c1+1; cc<=c2-1; cc++){
             var t = typeAt(r,cc);
             if (t !== '-' && t !== 'H') return false;
@@ -8394,8 +8403,11 @@ function redrawSimpleStrict(){
           return true;
         }
         function isSameAlfaCandidateCol(c,r1,r2){
+          // Ugyanez oszlopban (x _ _ y), x/y ∈ {A,H}, belső mezők csak '-' vagy 'H'
           if ((r2 - r1) !== 3) return false;
-          if (typeAt(r1,c) !== 'A' || typeAt(r2,c) !== 'A') return false;
+          var tT = typeAt(r1,c), tB = typeAt(r2,c);
+          var endOK = (tT==='A' || tT==='H') && (tB==='A' || tB==='H');
+          if (!endOK) return false;
           for (var rr=r1+1; rr<=r2-1; rr++){
             var t = typeAt(rr,c);
             if (t !== '-' && t !== 'H') return false;
