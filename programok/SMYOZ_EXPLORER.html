@@ -2493,74 +2493,7 @@ loadBtn.addEventListener('click', ()=>{
   
   // Teljes állapot törlése új SMYOZ betöltése előtt
   if (typeof TORLES_WORK === 'function') TORLES_WORK();
-
-  // SNAP nullázás: BETÖLTÉS előtt a korábbi mentés ne legyen visszatölthető
-  if (typeof window.SMY !== 'undefined' && window.SMY) {
-    var S = window.SMY;
-    var r=0,c=0,k;
-    // Mátrixok
-    if (Array.isArray(S.M_SNAP)) {
-      for (r=0; r<S.M_SNAP.length; r++){
-        if (!Array.isArray(S.M_SNAP[r])) continue;
-        for (c=0; c<S.M_SNAP[r].length; c++){ S.M_SNAP[r][c] = '---'; }
-      }
-    }
-    if (Array.isArray(S.P_SNAP)) {
-      for (r=0; r<S.P_SNAP.length; r++){
-        if (!Array.isArray(S.P_SNAP[r])) continue;
-        for (c=0; c<S.P_SNAP[r].length; c++){ S.P_SNAP[r][c] = '-'; }
-      }
-    }
-    if (Array.isArray(S.HOMOK_SNAP)) {
-      for (r=0; r<S.HOMOK_SNAP.length; r++){
-        if (!Array.isArray(S.HOMOK_SNAP[r])) continue;
-        for (c=0; c<S.HOMOK_SNAP[r].length; c++){ S.HOMOK_SNAP[r][c] = false; }
-      }
-    }
-    if (Array.isArray(S.ISHOT_SNAP)) {
-      for (r=0; r<S.ISHOT_SNAP.length; r++){
-        if (!Array.isArray(S.ISHOT_SNAP[r])) continue;
-        for (c=0; c<S.ISHOT_SNAP[r].length; c++){ S.ISHOT_SNAP[r][c] = false; }
-      }
-    }
-    // Vektorok
-    if (Array.isArray(S.SOROK_SNAP)) for (r=0; r<S.SOROK_SNAP.length; r++){ S.SOROK_SNAP[r] = '-'; }
-    if (Array.isArray(S.OSZL_SNAP))  for (r=0; r<S.OSZL_SNAP.length;  r++){ S.OSZL_SNAP[r]  = '-'; }
-    // Keret
-    if (Array.isArray(S.KERET_SNAP)) {
-      for (r=0; r<S.KERET_SNAP.length; r++){
-        if (!Array.isArray(S.KERET_SNAP[r])) continue;
-        for (c=0; c<S.KERET_SNAP[r].length; c++){ S.KERET_SNAP[r][c] = '-'; }
-      }
-    }
-    // work snapshotok
-    if (Array.isArray(S.workM_SNAP)) {
-      for (r=0; r<S.workM_SNAP.length; r++){
-        if (!Array.isArray(S.workM_SNAP[r])) continue;
-        for (c=0; c<S.workM_SNAP[r].length; c++){ S.workM_SNAP[r][c] = { C1:'-', C2:'-' }; }
-      }
-    }
-    if (Array.isArray(S.workP_SNAP)) {
-      for (r=0; r<S.workP_SNAP.length; r++){
-        if (!Array.isArray(S.workP_SNAP[r])) continue;
-        for (c=0; c<S.workP_SNAP[r].length; c++){ S.workP_SNAP[r][c] = '-'; }
-      }
-    }
-    // Számlálók / konfigok
-    if (Array.isArray(S.nMS_SNAP)) for (r=0; r<S.nMS_SNAP.length; r++){ S.nMS_SNAP[r] = 0; }
-    if (Array.isArray(S.nMO_SNAP)) for (r=0; r<S.nMO_SNAP.length; r++){ S.nMO_SNAP[r] = 0; }
-    if (typeof S.nMM_SNAP !== 'undefined')  S.nMM_SNAP  = 0;
-    if (typeof S.nPP_SNAP !== 'undefined')  S.nPP_SNAP  = 0;
-    if (typeof S.nMVP_SNAP !== 'undefined') S.nMVP_SNAP = 0;
-    if (typeof S.nVP_SNAP !== 'undefined')  S.nVP_SNAP  = 0;
-
-    if (S.CFG_SNAP) { for (k in S.CFG_SNAP) { delete S.CFG_SNAP[k]; } }
-    if (typeof window.RC_CONF_SNAP !== 'undefined' && window.RC_CONF_SNAP) {
-      for (k in window.RC_CONF_SNAP) { delete window.RC_CONF_SNAP[k]; }
-    }
-  }
-
-  if (typeof SMY !== 'undefined' && typeof TORLES_REAL === 'function') TORLES_REAL();
+    if (typeof SMY !== 'undefined' && typeof TORLES_REAL === 'function') TORLES_REAL();
 
 {  }
 {
@@ -2575,8 +2508,9 @@ diagRefreshVectors();
   }
   diagRefreshVectors();
   loadFromSeedText(seedText.value);
-  // BETÖLTÉS után azonnali MENTÉS: az első ELHELYEZÉS ELVETésekor már a friss játék állapotára tudunk visszamenni
-  if (typeof MENTES === 'function') MENTES();
+
+  // RA: BETÖLTÉS utáni alap-mentés (SNAP frissítése). Ne nyúljunk az ELHELYEZ állapotgéphez.
+  try{ if (typeof MENTES === 'function') MENTES(); }catch(e){}
 
 });
 function loadFromSeedText(raw){
@@ -11944,4 +11878,5 @@ document.addEventListener('keydown', function(ev){
   else bindLoadBtn();
 })();
 </script>
+
 </body></html>
